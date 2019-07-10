@@ -1380,6 +1380,9 @@ class _SettingsPageState extends State<SettingsPage>{
                                       new FlatButton(
                                           child: new Text("Yes"),
                                           onPressed: () async{
+                                            if(_loading){
+                                              return;
+                                            }
                                             _changingId = true;
                                             _loading = true;
                                             await http.get(_server+"/removeDevice?user=$_userId&device=$_deviceId&key=$_secretKey");
