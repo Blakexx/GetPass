@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "373523199314",
+    "firebase_url": "https://ppwned.firebaseio.com",
+    "project_id": "ppwned",
+    "storage_bucket": "ppwned.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373523199314:android:142992f266121afb",
+        "android_client_info": {
+          "package_name": "land.platypus.ppwned"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373523199314-tk3tbj23m7chjnq6s8h6lpm8aajgast1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "land.platypus.ppwned",
+            "certificate_hash": "53095745ba4846e0965257dfec666855ad7f6123"
+          }
+        },
+        {
+          "client_id": "373523199314-fsd57hp5mtutahdq73ie2t88iackimga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrEIO-3RiJqoQdt60dyrwxDGC-TmljCsY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373523199314-fsd57hp5mtutahdq73ie2t88iackimga.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "373523199314-33mjljh6158t8vdc314hh6g68gbkn195.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "land.platypus.ppwned",
+                "app_store_id": "1467179360"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

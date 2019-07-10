@@ -1,16 +1,21 @@
-# ppwned
+# PPoll
 
-Find passwords
+Description coming soon
 
-## Getting Started
+### Installing
 
-This project is a starting point for a Flutter application.
+Apple app store: Coming soon
 
-A few resources to get you started if this is your first Flutter project:
+Google play store: Coming soon
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+Amazon app store: Coming soon
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## Built With
+
+Flutter - Google's app development framework. (https://flutter.io)
+
+## Authors
+
+Blake Bottum
+
+Caleb Jiang
