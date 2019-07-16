@@ -89,7 +89,11 @@ Future<Null> _getUserId() async{
       }
     }
     if(externalUID==null){
-      externalUID = (await http.get(_server+"/createUser?key="+_secretKey)).body;
+      var response = (await http.get(_server+"/createUser?key="+_secretKey));
+      if(response.statusCode==403){
+        return _runErrorApp();
+      }
+      externalUID = response.body;
       _internalUserId["userId"] = externalUID;
       if(Platform.isIOS){
         _externalUserId.write(key: "PPwnedUserID", value: externalUID);
@@ -163,6 +167,9 @@ void main() async{
   int count = 0;
   do{
     response = await http.get(_server+"/getUserData?user=$_userId&key=$_secretKey");
+    if(response.statusCode==403){
+      return _runErrorApp();
+    }
     if(response.statusCode!=200){
       if(count<2){
         _setUserId(count==0?await _internalUserId["userId"]:null);
