@@ -91,7 +91,8 @@ Future<Null> _getUserId() async{
     if(externalUID==null){
       var response = (await http.get(_server+"/createUser?key="+_secretKey));
       if(response.statusCode==403){
-        return _runErrorApp();
+        _runErrorApp();
+        throw new Exception("Forbidden");
       }
       externalUID = response.body;
       _internalUserId["userId"] = externalUID;
