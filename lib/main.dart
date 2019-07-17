@@ -197,8 +197,8 @@ void main() async{
       _userData["unlocked"] ??= new List<dynamic>();
       _isAdmin = _userData["admin"]==true;
       _userData["unlocking"] ??= new Map<String,dynamic>();
-      print(_userId);
-      print(_userData);
+      //print(_userId);
+      //print(_userData);
       if(!_changingId){
         runApp(new App());
       }else{
@@ -257,7 +257,7 @@ class _AppState extends State<App>{
               try{
                 valid = json.decode((await http.post(Uri.encodeFull(_server+"/handlePurchase?user=$_userId&platform=$platform&product=$product&key=$_secretKey"),body:token)).body);
               }catch(e){}
-              print(valid);
+              //print(valid);
               if(valid){
                 setState((){
                   if(product=="unlimited"){
@@ -510,7 +510,7 @@ class _SearchPageState extends State<SearchPage>{
     RegExp regex = new RegExp(r".+@[^\.@]+\.[^\.@]+");
     if(regex.stringMatch(_input)==_input&&!_input.contains(" ")){
       http.Response response = await http.get(_server+"/getPasswords?email=$_input&user=$_userId&key=$_secretKey");
-      print(response.body);
+      //print(response.body);
       if(response.statusCode==200){
         if(_userData["history"]==null){
           _userData["history"] = new List<dynamic>();
@@ -687,7 +687,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                     key: _unlockKey,
                     icon: new Icon(Icons.lock_outline,color:Colors.red),
                     onPressed: () async{
-                      if(_loading||_removing){
+                      if(_loading||_removing||!_canLeave){
                         return;
                       }
                       if(_userData["unlocks"]==0&&!_isSubbed){
@@ -977,7 +977,7 @@ class _ListPageState extends State<ListPage>{
                                       ),
                                     ),
                                     onTap: () async{
-                                      if(_loading||_removing){
+                                      if(_loading||_removing||!_canLeave){
                                         return;
                                       }
                                       if(_userData["unlocks"]==0&&!_isSubbed){
@@ -1050,7 +1050,7 @@ class _ListPageState extends State<ListPage>{
                                 _opening = i;
                                 setState((){});
                                 http.Response response = await http.get(_server+"/getPasswords?email=$email&user=$_userId&fromHis=true&key=$_secretKey");
-                                print(response.body);
+                                //print(response.body);
                                 if(response.statusCode==200){
                                   _results = json.decode(response.body);
                                   _openedKey = new GlobalKey();
