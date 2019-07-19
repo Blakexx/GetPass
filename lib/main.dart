@@ -17,6 +17,7 @@ import "package:firebase_dynamic_links/firebase_dynamic_links.dart";
 import "package:after_layout/after_layout.dart";
 import "package:super_tooltip/super_tooltip.dart";
 import "package:transparent_image/transparent_image.dart";
+import 'package:flutter/gestures.dart';
 import "key.dart";
 
 String _server;
@@ -46,6 +47,8 @@ String _currentEmail;
 Color _snackBarColor = Colors.grey[800];
 
 Duration _snackBarDuration = const Duration(milliseconds: 1000);
+
+bool _agreedToPolicy;
 
 void _setUserId(String id) async{
   _internalUserId["userId"] = id;
@@ -197,10 +200,11 @@ void main() async{
       _userData["unlocked"] ??= new List<dynamic>();
       _isAdmin = _userData["admin"]==true;
       _userData["unlocking"] ??= new Map<String,dynamic>();
+      _agreedToPolicy = _userData["created"]!=_userData["lastLogin"]||_changingId;
       //print(_userId);
       //print(_userData);
       if(!_changingId){
-        runApp(new App());
+        runApp(_agreedToPolicy?new App():new UserAgreement());
       }else{
         _changingId = false;
       }
@@ -208,6 +212,112 @@ void main() async{
     }
     ++count;
   }while(response.statusCode!=200);
+}
+
+class UserAgreement extends StatefulWidget{
+  @override
+  _UserAgreementState createState() => new _UserAgreementState();
+}
+
+class _UserAgreementState extends State<UserAgreement>{
+
+  @override
+  void initState(){
+    super.initState();
+    precacheImage(new AssetImage("images/logoRound.png"),context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      home: new Builder(builder:(context){
+        double heightOrWidth = min(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
+        double ratio = max(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height)/568.0;
+        bool landscape = MediaQuery.of(context).size.width>MediaQuery.of(context).size.height;
+        List<Widget> widgets = [
+          new Container(height:landscape?20.0*ratio:0.0),
+          new Container(
+              width: heightOrWidth*1/2,
+              height: heightOrWidth*1/2,
+              child: new FadeInImage(
+                  placeholder: new MemoryImage(kTransparentImage),
+                  image: new AssetImage("images/logoRound.png"),
+                  fadeInDuration: new Duration(milliseconds:400)
+              )
+          ),
+          new Container(height:landscape?20.0*ratio:0.0),
+          new Text("Hi there!",style:new TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
+          new Text("Welcome to GetPass.",style: new TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
+          new Container(height:landscape?20.0*ratio:0.0),
+          new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Text("GetPass provides a completely anonymous and ad-free experience.",style:new TextStyle(fontSize:15.0*ratio,color:Colors.white.withOpacity(0.9)),textAlign: TextAlign.center)),
+          new Container(height:landscape?40.0*ratio:0.0),
+          new Column(
+              children:[
+                new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Center(child:new RichText(
+                    textAlign:TextAlign.center,
+                    text:new TextSpan(
+                        children:[
+                          new TextSpan(
+                            text:"By pressing the \"Get started\" button and using GetPass, you agree to our ",
+                            style: new TextStyle(fontSize:9.0*ratio),
+                          ),
+                          new TextSpan(
+                            text:"Privacy Policy",
+                            style: new TextStyle(color: Colors.blue,fontSize:9.0*ratio),
+                            recognizer: new TapGestureRecognizer()..onTap = () async{
+                              if(await canLaunch("https://platypuslabs.llc/privacypolicy")){
+                                await launch("https://platypuslabs.llc/privacypolicy");
+                              }else{
+                                throw "Could not launch";
+                              }
+                            },
+                          ),
+                          new TextSpan(
+                            text:" and ",
+                            style: new TextStyle(fontSize:9.0*ratio),
+                          ),
+                          new TextSpan(
+                            text:"Terms of Use",
+                            style: new TextStyle(color: Colors.blue,fontSize:9.0*ratio),
+                            recognizer: new TapGestureRecognizer()..onTap = () async{
+                              if(await canLaunch("https://platypuslabs.llc/terms")){
+                                await launch("https://platypuslabs.llc/terms");
+                              }else{
+                                throw "Could not launch";
+                              }
+                            },
+                          ),
+                          new TextSpan(
+                              text:".",
+                              style: new TextStyle(fontSize:9.0)
+                          ),
+                        ]
+                    )
+                ))),
+                new Container(height:10*ratio),
+                new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Container(width:double.infinity,child:new RaisedButton(
+                    padding: EdgeInsets.all(13.0),
+                    color:Colors.white30,
+                    child:new Text("Get started",style:new TextStyle(fontSize:12.0*ratio)),
+                    onPressed:(){
+                      setState((){
+                        _agreedToPolicy=true;
+                      });
+                      runApp(new App());
+                    }
+                )))
+              ]
+          ),
+          new Container(height:landscape?50.0*ratio:0.0),
+        ];
+        return new Scaffold(body:new Container(child:new Center(child:!landscape?new Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children:widgets):new ListView(children:widgets))));
+      }),
+      theme: new ThemeData(
+        brightness: Brightness.dark
+      ),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 bool _changingId = false;
@@ -1361,7 +1471,7 @@ class _SettingsPageState extends State<SettingsPage>{
                     ),
                     margin: EdgeInsets.zero,
                   ),
-                  new Divider(height:3.0),
+                  new Container(height:10.0),
                   new Card(
                     color: Colors.white30,
                     child: new ListTile(
@@ -1435,7 +1545,37 @@ class _SettingsPageState extends State<SettingsPage>{
                     ),
                     margin: EdgeInsets.zero,
                   ),
-                  new Container(height:20)
+                  new Container(height:10),
+                  new Padding(
+                      padding: EdgeInsets.only(bottom:20.0),
+                      child: new Card(
+                          color: Colors.white30,
+                          child: new ListTile(
+                              title: new Text("Restore purchases"),
+                              trailing: new Icon(Icons.info_outline),
+                              onTap: (){
+                                if(_loading){
+                                  return;
+                                }
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context)=>new AlertDialog(
+                                      title: new Text("Restore Purchases"),
+                                      content: new Text("In order to restore past purchases, you must log into the account you used to make these purchases."),
+                                      actions: [
+                                        new FlatButton(
+                                            child: new Text("OK"),
+                                            onPressed: ()=>Navigator.of(context).pop()
+                                        )
+                                      ],
+                                    )
+                                );
+                              }
+                          ),
+                          margin: EdgeInsets.zero
+                      )
+                  )
                 ]
             )
         )
