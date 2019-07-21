@@ -1341,7 +1341,7 @@ class _PurchaseButtonState extends State<PurchaseButton>{
   String _amount;
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext rcontext){
     return new Padding(
         padding: EdgeInsets.only(top:20.0),
         child: new Card(
@@ -1360,14 +1360,46 @@ class _PurchaseButtonState extends State<PurchaseButton>{
                 if(_loading){
                   return;
                 }
-                context.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
-                  _loading = true;
-                });
                 final PurchaseParam purchaseParam = new PurchaseParam(productDetails:widget._details);
                 if(widget._details.id!="unlimited"){
+                  context.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
+                    _loading = true;
+                  });
                   InAppPurchaseConnection.instance.buyConsumable(purchaseParam:purchaseParam, autoConsume: true);
                 }else{
-                  InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
+                  if(Platform.isIOS&&!_isSubbed){
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context)=>new AlertDialog(
+                        title: new Text("Unlimited Unlocks"),
+                        content: new Text("While this subscription is active all unlocks are free of charge."),
+                        actions: [
+                          new FlatButton(
+                            child: new Text("Cancel"),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          new FlatButton(
+                            child: new Text("Purchase"),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                              rcontext.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
+                                _loading = true;
+                              });
+                              InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
+                            }
+                          )
+                        ]
+                      )
+                    );
+                  }else{
+                    context.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
+                      _loading = true;
+                    });
+                    InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
+                  }
                 }
               }:null
           ),
