@@ -1563,7 +1563,7 @@ class _SettingsPageState extends State<SettingsPage>{
                   new Card(
                     color: Colors.white30,
                     child: new ListTile(
-                        title: new Text("Contact Us"),
+                        title: new Text("Contact us"),
                         trailing: new Icon(Icons.mail_outline),
                         onTap: () async{
                           var url = Uri.encodeFull("mailto:support@platypuslabs.llc?subject=GetPass&body=Contact Reason: ");
