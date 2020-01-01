@@ -18,6 +18,7 @@ import "package:after_layout/after_layout.dart";
 import "package:super_tooltip/super_tooltip.dart";
 import "package:transparent_image/transparent_image.dart";
 import 'package:flutter/gestures.dart';
+import "package:local_auth/local_auth.dart";
 import "key.dart";
 
 String _server;
@@ -111,13 +112,16 @@ Future<Null> _getUserId() async{
   });
 }
 
-void _runErrorApp(){
-  runApp(
+Future<void> _runErrorApp([String message, Brightness brightness]) async{
+  return runApp(
       new MaterialApp(
+          theme: new ThemeData(
+            brightness: brightness
+          ),
           home: new Scaffold(
               body: new Container(
                   child: new Center(
-                      child: new Text("Something is wrong")
+                      child: new Text(message??"Something is wrong")
                   )
               )
           ),
@@ -139,6 +143,17 @@ void main() async{
   }
   if(Platform.isIOS){
     SystemChrome.setEnabledSystemUIOverlays([]);
+    await _runErrorApp("",Brightness.dark);
+    LocalAuthentication localAuth = new LocalAuthentication();
+    bool auth = false;
+    while(!auth){
+      try{
+        auth = await localAuth.authenticateWithBiometrics(localizedReason: "To ensure you are the owner of this phone");
+      }catch(e){
+        print(e);
+        return _runErrorApp();
+      }
+    }
   }
   if(Platform.isAndroid){
     int count = 0;
@@ -242,7 +257,7 @@ class _UserAgreementState extends State<UserAgreement>{
               child: new FadeInImage(
                   placeholder: new MemoryImage(kTransparentImage),
                   image: new AssetImage("images/logoRound.png"),
-                  fadeInDuration: new Duration(milliseconds:400)
+                  fadeInDuration: new Duration(milliseconds:  400)
               )
           ),
           new Container(height:landscape?20.0*ratio:0.0),
@@ -312,9 +327,7 @@ class _UserAgreementState extends State<UserAgreement>{
         ];
         return new Scaffold(body:new Container(child:new Center(child:!landscape?new Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children:widgets):new ListView(children:widgets))));
       }),
-      theme: new ThemeData(
-        brightness: Brightness.dark
-      ),
+      theme: new ThemeData.dark(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -479,18 +492,24 @@ class _AppState extends State<App>{
             }
         ),
         theme: new ThemeData(
-            brightness: Brightness.dark
+          brightness: Brightness.dark,
+          snackBarTheme: new SnackBarThemeData(
+            contentTextStyle: new TextStyle(
+              color: Colors.white
+            )
+          ),
+          buttonTheme: new ButtonThemeData(
+            colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.cyanAccent)
+          )
         ),
         debugShowCheckedModeBanner: false
     );
   }
 }
 
-bool _firstOne = true;
-
 GlobalKey _openedKey;
 
-bool _codePageOpened = false;
+bool _codePageOpened = false, _firstOne = true;
 
 class MainPage extends StatefulWidget{
   @override

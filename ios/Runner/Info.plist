@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
@@ -30,6 +30,8 @@
 	<string>Calendar is not used</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Contacts are not used</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>To unlock app</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location is not used</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

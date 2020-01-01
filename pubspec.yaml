@@ -29,10 +29,11 @@ dependencies:
   permission_handler:
   flutter_udid:
   url_launcher:
-  firebase_dynamic_links:
+  firebase_dynamic_links: 0.4.0+6
   super_tooltip:
   after_layout:
   transparent_image:
+  local_auth:
 
 dev_dependencies:
   flutter_test:

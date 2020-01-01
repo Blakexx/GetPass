@@ -28,7 +28,7 @@ PODS:
     - GoogleUtilities/Environment (~> 5.3)
     - GoogleUtilities/UserDefaults (~> 5.3)
   - Flutter (1.0.0)
-  - flutter_secure_storage (3.2.0):
+  - flutter_secure_storage (3.3.1):
     - Flutter
   - flutter_udid (0.0.1):
     - Flutter
@@ -59,6 +59,8 @@ PODS:
     - GoogleUtilities/Logger
   - in_app_purchase (0.0.1):
     - Flutter
+  - local_auth (0.0.1):
+    - Flutter
   - nanopb (0.3.901):
     - nanopb/decode (= 0.3.901)
     - nanopb/encode (= 0.3.901)
@@ -66,21 +68,28 @@ PODS:
   - nanopb/encode (0.3.901)
   - path_provider (0.0.1):
     - Flutter
-  - permission_handler (3.1.0):
+  - permission_handler (4.0.0):
     - Flutter
   - SAMKeychain (1.5.3)
   - url_launcher (0.0.1):
     - Flutter
+  - url_launcher_macos (0.0.1):
+    - Flutter
+  - url_launcher_web (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_udid (from `.symlinks/plugins/flutter_udid/ios`)
   - in_app_purchase (from `.symlinks/plugins/in_app_purchase/ios`)
+  - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
+  - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -99,40 +108,49 @@ EXTERNAL SOURCES:
   firebase_dynamic_links:
     :path: ".symlinks/plugins/firebase_dynamic_links/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: Flutter
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_udid:
     :path: ".symlinks/plugins/flutter_udid/ios"
   in_app_purchase:
     :path: ".symlinks/plugins/in_app_purchase/ios"
+  local_auth:
+    :path: ".symlinks/plugins/local_auth/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
+  url_launcher_macos:
+    :path: ".symlinks/plugins/url_launcher_macos/ios"
+  url_launcher_web:
+    :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
   Firebase: 8bb9268bff82374f2cbaaabb143e725743c316ae
-  firebase_dynamic_links: 4b2a2629122f9d47f4e2b07e20b77edf27834799
+  firebase_dynamic_links: 2770f18c657e9a05696600333e0ff4698ded38e7
   FirebaseAnalytics: c06f9d70577d79074214700a71fd5d39de5550fb
   FirebaseAnalyticsInterop: e5f21be9af6548372e2f0815834ff909bff395a2
   FirebaseCore: 35747502d9e8c6ee217385ad04446c7c2aaf9c5c
   FirebaseDynamicLinks: c713da5f75c324f38fb2d57164bbc1c461aa6739
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
-  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_secure_storage: 0c5779648ff644110e507909b77a57e620cbbf8b
-  flutter_udid: e698e58df29cd728c7e3f061e13a8e0d93376f51
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  flutter_udid: c9d59b0a440e137882faa5cf53a3501e906fb8c2
   GoogleAppMeasurement: 98b71f5e04142793729a5ef23e5b96651ff4b70f
   GoogleUtilities: 95996bea7c7d9b8fb811b7507669a4a8762f80c7
   in_app_purchase: 5e80de181441b1c149372237f5e65255455e175f
+  local_auth: 2571c49920ae469f46d5557435fad8fa473a5e88
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
-  permission_handler: fa6b0d784b1a43cb96b468a5b8365cb130b1956a
+  path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
+  permission_handler: 0fb88b8a3c23e31e5de45b8f1bb8b7de28cf8941
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  url_launcher: 0067ddb8f10d36786672aa0722a21717dba3a298
+  url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
+  url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
+  url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
-PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497
+PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
 
 COCOAPODS: 1.7.4
