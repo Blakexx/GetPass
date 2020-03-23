@@ -902,9 +902,8 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                 children: [
                   unknownPasswords?new Container(
                     color: Colors.white24,
-                    padding: EdgeInsets.only(top:3.0,bottom:3.0),
                     child: new ListTile(
-                      title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 20)),
+                      title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 19)),
                       subtitle: new Text("Guess if a password is on this list"),
                       trailing: new Container(
                           child: new Row(
@@ -923,7 +922,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                             barrierDismissible: false,
                             builder: (context)=>new UnlockPasswordDialog(widget._email)
                         );
-                      },
+                      }
                     )
                   ):new Container(),
                   new Expanded(
