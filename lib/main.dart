@@ -1699,7 +1699,7 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
     if(_passwordGuess.length>0){
       Map<String,dynamic> unlockRes = json.decode((await http.get(_server+"/unlockPassword?user=$_userId&email=${widget._email}&password=${_passwordGuess.toLowerCase()}&key=$_secretKey")).body);
       if(unlockRes["unlocked"]==true){
-        _results["data"][unlockRes["index"]] = unlockRes["password"];
+        _results["data"] = unlockRes["data"];
         _passLoading = false;
         context.findAncestorStateOfType<_AppState>().setState((){});
         Navigator.of(context).pop();
