@@ -904,7 +904,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                     color: Colors.white24,
                     child: new ListTile(
                       title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 19)),
-                      subtitle: new Text("Guess if a password is on this list"),
+                      subtitle: new Text("Check if a password is on this list"),
                       trailing: new Container(
                           child: new Row(
                             children: [
@@ -1719,7 +1719,7 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
   Widget build(BuildContext context){
     return new WillPopScope(
       child: new AlertDialog(
-          title: new Text("Enter password guess"),
+          title: new Text("Enter password"),
           content: new TextField(
               decoration: new InputDecoration(
                   border: new OutlineInputBorder(),
