@@ -900,27 +900,31 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
             body: new Container(
               child: _results!=null&&_results["data"] is List&&_results["data"].length>0?new Column(
                 children: [
-                  unknownPasswords?new ListTile(
-                    title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 20)),
-                    subtitle: new Text("Guess if a password is on this list"),
-                    trailing: new Container(
-                        child: new Row(
-                          children: [
-                            new Text("0",style: new TextStyle(fontSize: 19.0)),
-                            new Container(width:3),
-                            new Icon(Icons.credit_card,size:19.0)
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.end,
-                        ),
-                        width: 40.0
-                    ),
-                    onTap: (){
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context)=>new UnlockPasswordDialog(widget._email)
-                      );
-                    },
+                  unknownPasswords?new Container(
+                    color: Colors.white24,
+                    padding: EdgeInsets.only(top:3.0,bottom:3.0),
+                    child: new ListTile(
+                      title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 20)),
+                      subtitle: new Text("Guess if a password is on this list"),
+                      trailing: new Container(
+                          child: new Row(
+                            children: [
+                              new Text("0",style: new TextStyle(fontSize: 19.0)),
+                              new Container(width:3),
+                              new Icon(Icons.credit_card,size:19.0)
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.end,
+                          ),
+                          width: 40.0
+                      ),
+                      onTap: (){
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context)=>new UnlockPasswordDialog(widget._email)
+                        );
+                      },
+                    )
                   ):new Container(),
                   new Expanded(
                     child: new Scrollbar(
@@ -934,6 +938,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                                   new Divider(height:2.0)
                                 ]
                             ),
+                            physics: new ClampingScrollPhysics(),
                             itemCount: _results["data"].length
                         )
                     )
