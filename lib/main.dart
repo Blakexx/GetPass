@@ -116,7 +116,7 @@ Future<void> _runErrorApp([String message, Brightness brightness]) async{
   return runApp(
       new MaterialApp(
           theme: new ThemeData(
-            brightness: brightness
+              brightness: brightness
           ),
           home: new Scaffold(
               body: new Container(
@@ -145,12 +145,11 @@ void main() async{
     SystemChrome.setEnabledSystemUIOverlays([]);
     await _runErrorApp("",Brightness.dark);
     LocalAuthentication localAuth = new LocalAuthentication();
-    bool auth = false;
+    bool auth = true;
     while(!auth){
       try{
         auth = await localAuth.authenticateWithBiometrics(localizedReason: "To ensure you are the owner of this phone");
       }catch(e){
-        print(e);
         return _runErrorApp();
       }
     }
@@ -492,15 +491,15 @@ class _AppState extends State<App>{
             }
         ),
         theme: new ThemeData(
-          brightness: Brightness.dark,
-          snackBarTheme: new SnackBarThemeData(
-            contentTextStyle: new TextStyle(
-              color: Colors.white
+            brightness: Brightness.dark,
+            snackBarTheme: new SnackBarThemeData(
+                contentTextStyle: new TextStyle(
+                    color: Colors.white
+                )
+            ),
+            buttonTheme: new ButtonThemeData(
+                colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.cyanAccent)
             )
-          ),
-          buttonTheme: new ButtonThemeData(
-            colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.cyanAccent)
-          )
         ),
         debugShowCheckedModeBanner: false
     );
@@ -789,7 +788,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
           content: new Material(
             child: new Padding(
                 padding: EdgeInsets.all(10.0),
-                child: new Text("Tap here to unlock the passwords that we found for 1 credit",style: new TextStyle(color:Colors.black,fontSize:15),textAlign:TextAlign.center)
+                child: new Text("Tap here to unlock the password${_results["data"]==1?"":"s"} that we found for 1 credit",style: new TextStyle(color:Colors.black,fontSize:15),textAlign:TextAlign.center)
             ),
             color: Colors.grey[300],
           ),
@@ -801,6 +800,10 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
   }
 
   Widget build(BuildContext context){
+    bool unknownPasswords;
+    if(_results!=null&&_results["data"] is List&&_results["data"].length>0){
+      unknownPasswords = _results["data"].any((s)=>s.contains("█")==true);
+    }
     return new WillPopScope(
         child: new Scaffold(
             appBar: new AppBar(title:new Text(widget._email),actions: [
@@ -821,7 +824,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                       }
                       if(_userData["unlocks"]==0&&!_isSubbed){
                         Navigator.of(context).pop();
-                        context.ancestorStateOfType(new TypeMatcher<_AppState>()).setState((){
+                        context.findAncestorStateOfType<_AppState>().setState((){
                           _index = 3;
                         });
                       }else{
@@ -895,19 +898,51 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
               )
             ],bottom: _loading&&!_codePageOpened?new PreferredSize(child: new Container(height:2,child:new LinearProgressIndicator()), preferredSize: new Size(double.infinity,2.0)):null),
             body: new Container(
-              child: _results!=null&&_results["data"] is List&&_results["data"].length>0?new Scrollbar(
-                  child: new ListView.builder(
-                      itemBuilder: (context,i)=>new Column(
-                          children: _results!=null?[
-                            new ListTile(title: new Text(_results["data"][i])),
-                            i<_results["data"].length-1?new Divider(height:2.0):new Container()
-                          ]:[
-                            new ListTile(title:new Text("placeholder")),
-                            new Divider(height:2.0)
+              child: _results!=null&&_results["data"] is List&&_results["data"].length>0?new Column(
+                children: [
+                  unknownPasswords?new MaterialButton(
+                    child: new Row(
+                      children: [
+                        new Expanded(
+                          child: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 20))
+                        ),
+                        new Row(
+                          children: [
+                            new Text("0",style: new TextStyle(fontSize: 20.0, color: Colors.white)),
+                            new Container(width:3.0),
+                            new Icon(Icons.credit_card,size:20.0,color: Colors.white)
                           ]
-                      ),
-                      itemCount: _results["data"].length
+                        )
+                      ]
+                    ),
+                    color: Colors.white30,
+                    onPressed: (){
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context)=>new UnlockPasswordDialog(widget._email)
+                      );
+                    },
+                    height:67,
+                    minWidth: double.infinity,
+                  ):new Container(),
+                  new Expanded(
+                    child: new Scrollbar(
+                        child: new ListView.builder(
+                            itemBuilder: (context,i)=>new Column(
+                                children: _results!=null?[
+                                  new ListTile(title: new Text(_results["data"][i])),
+                                  i<_results["data"].length-1?new Divider(height:2.0):new Container()
+                                ]:[
+                                  new ListTile(title:new Text("placeholder")),
+                                  new Divider(height:2.0)
+                                ]
+                            ),
+                            itemCount: _results["data"].length
+                        )
+                    )
                   )
+                ]
               ):_results!=null&&_results["data"] is int?new Center(
                   child: new Container(
                       width:min(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height)*.63,
@@ -1110,7 +1145,7 @@ class _ListPageState extends State<ListPage>{
                                         return;
                                       }
                                       if(_userData["unlocks"]==0&&!_isSubbed){
-                                        context.ancestorStateOfType(new TypeMatcher<_AppState>()).setState((){
+                                        context.findAncestorStateOfType<_AppState>().setState((){
                                           _index = 3;
                                         });
                                         return;
@@ -1381,40 +1416,40 @@ class _PurchaseButtonState extends State<PurchaseButton>{
                 }
                 final PurchaseParam purchaseParam = new PurchaseParam(productDetails:widget._details);
                 if(widget._details.id!="unlimited"){
-                  context.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
+                  context.findAncestorStateOfType<_StorePageState>().setState((){
                     _loading = true;
                   });
                   InAppPurchaseConnection.instance.buyConsumable(purchaseParam:purchaseParam, autoConsume: true);
                 }else{
                   if(Platform.isIOS&&!_isSubbed){
                     showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context)=>new AlertDialog(
-                        title: new Text("Unlimited Unlocks"),
-                        content: new Text("While this subscription is active all unlocks are free of charge."),
-                        actions: [
-                          new FlatButton(
-                            child: new Text("Cancel"),
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          new FlatButton(
-                            child: new Text("Purchase"),
-                            onPressed: (){
-                              Navigator.of(context).pop();
-                              rcontext.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
-                                _loading = true;
-                              });
-                              InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
-                            }
-                          )
-                        ]
-                      )
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context)=>new AlertDialog(
+                            title: new Text("Unlimited Unlocks"),
+                            content: new Text("While this subscription is active all unlocks are free of charge."),
+                            actions: [
+                              new FlatButton(
+                                child: new Text("Cancel"),
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              new FlatButton(
+                                  child: new Text("Purchase"),
+                                  onPressed: (){
+                                    Navigator.of(context).pop();
+                                    rcontext.findAncestorStateOfType<_StorePageState>().setState((){
+                                      _loading = true;
+                                    });
+                                    InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
+                                  }
+                              )
+                            ]
+                        )
                     );
                   }else{
-                    context.ancestorStateOfType(new TypeMatcher<_StorePageState>()).setState((){
+                    context.findAncestorStateOfType<_StorePageState>().setState((){
                       _loading = true;
                     });
                     InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam:purchaseParam);
@@ -1535,7 +1570,7 @@ class _SettingsPageState extends State<SettingsPage>{
                               builder: (context)=>new WillPopScope(
                                 child: new AlertDialog(
                                     title: new Text("Are you sure?"),
-                                    content: new Text("You will lose all unlocked content recieve a new user token."),
+                                    content: new Text("You will lose all unlocked content and recieve a new user token."),
                                     actions: [
                                       new FlatButton(
                                           child: new Text("No"),
@@ -1634,6 +1669,104 @@ class _SettingsPageState extends State<SettingsPage>{
   }
 }
 
+class UnlockPasswordDialog extends StatefulWidget{
+
+  final String _email;
+
+  UnlockPasswordDialog(this._email);
+
+  @override
+  _UnlockPasswordDialogState createState()=>new _UnlockPasswordDialogState();
+}
+
+class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
+
+  FocusNode _f = new FocusNode();
+  String _passwordGuess;
+  String _errorText;
+  bool _passLoading = false;
+
+  void _submit() async{
+    if(_passLoading){
+      return;
+    }
+    if(_f.hasFocus){
+      _f.unfocus();
+    }
+    setState((){
+      _passLoading = true;
+    });
+    if(_passwordGuess.length>0){
+      Map<String,dynamic> unlockRes = json.decode((await http.get(_server+"/unlockPassword?user=$_userId&email=${widget._email}&password=${_passwordGuess.toLowerCase()}&key=$_secretKey")).body);
+      if(unlockRes["unlocked"]==true){
+        _results["data"][unlockRes["index"]] = unlockRes["password"];
+        _passLoading = false;
+        context.findAncestorStateOfType<_AppState>().setState((){});
+        Navigator.of(context).pop();
+        return;
+      }else{
+        _errorText = "Incorrect guess";
+        _passLoading = false;
+      }
+    }else{
+      _errorText = "Invalid password";
+      _passLoading = false;
+    }
+    setState((){});
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return new WillPopScope(
+      child: new AlertDialog(
+          title: new Text("Enter password guess"),
+          content: new TextField(
+              decoration: new InputDecoration(
+                  border: new OutlineInputBorder(),
+                  isDense: true,
+                  labelText: "Password",
+                  filled: true,
+                  enabled: !_passLoading,
+                  errorText: _errorText,
+                  suffix: _passLoading?new Container(height:16.0,width:16.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+              ),
+              focusNode: _f,
+              onSubmitted: (s){
+                _submit();
+              },
+              onChanged: (s){
+                _passwordGuess = s;
+                if(_errorText!=null){
+                  setState((){
+                    _errorText = null;
+                  });
+                }
+              },
+              autocorrect: false
+          ),
+          actions: [
+            new FlatButton(
+                child: new Text("Cancel"),
+                onPressed: (){
+                  if(_passLoading){
+                    return;
+                  }
+                  Navigator.of(context).pop();
+                }
+            ),
+            new FlatButton(
+                child: new Text("Submit"),
+                onPressed: (){
+                  _submit();
+                }
+            )
+          ]
+      ),
+      onWillPop: ()=>new Future<bool>(()=>!_passLoading),
+    );
+  }
+}
+
 class ChangeIdDialog extends StatefulWidget{
   @override
   _ChangeIdDialogState createState()=>new _ChangeIdDialogState();
@@ -1667,7 +1800,7 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
             t.cancel();
             _loading = false;
             Navigator.of(context).pop();
-            context.ancestorStateOfType(new TypeMatcher<_AppState>()).setState((){});
+            context.findAncestorStateOfType<_AppState>().setState((){});
           }
         });
       }else{
@@ -1768,7 +1901,7 @@ class _BlacklistDialogState extends State<BlacklistDialog>{
         _loading = false;
         Navigator.of(context).pop();
         _userData["unlocks"]-=3;
-        context.ancestorStateOfType(new TypeMatcher<_AppState>()).setState((){});
+        context.findAncestorStateOfType<_AppState>().setState((){});
       }else{
         if(r.body=="Already blacklisted"){
           _errorText = "Already Blacklisted";
@@ -1910,7 +2043,7 @@ class _UnlockDialogState extends State<UnlockDialog>{
         _errorText = "Invalid code";
       }
       _loading = false;
-      context.ancestorStateOfType(new TypeMatcher<_AppState>()).setState((){});
+      context.findAncestorStateOfType<_AppState>().setState((){});
     }else{
       setState((){
         if(_input.length!=0){
@@ -1979,7 +2112,7 @@ class _UnlockDialogState extends State<UnlockDialog>{
 class NumberTextFormatter extends TextInputFormatter{
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue){
-    return new RegExp(r"\d*").stringMatch==newValue.text?oldValue:newValue;
+    return new RegExp(r"\d*").stringMatch(newValue.text)==newValue.text?newValue:oldValue;
   }
 }
 
