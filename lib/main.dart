@@ -1704,14 +1704,10 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
         context.findAncestorStateOfType<_AppState>().setState((){});
         Navigator.of(context).pop();
         return;
-      }else{
-        _errorText = "Incorrect guess";
-        _passLoading = false;
       }
-    }else{
-      _errorText = "Invalid password";
-      _passLoading = false;
     }
+    _errorText = "Invalid password";
+    _passLoading = false;
     setState((){});
   }
 

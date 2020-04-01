@@ -6,11 +6,9 @@ By using GetPass you agree to our privacy policy and terms of use. Find them at 
 
 ### Installing
 
-Apple app store: Coming soon
+Apple app store: https://apps.apple.com/us/app/getpass/id1467179360?ls=1
 
-Google play store: Coming soon
-
-Amazon app store: Coming soon
+Google play store: https://play.google.com/store/apps/details?id=land.platypus.ppwned
 
 ## Built With
 
