@@ -29,9 +29,9 @@ String _userId;
 dynamic _externalUserId;
 dynamic _internalUserId;
 
-ScrollController _s = new ScrollController();
+ScrollController _s = ScrollController();
 
-List<ProductDetails> _products = new List<ProductDetails>();
+List<ProductDetails> _products = List<ProductDetails>();
 
 bool _available = false;
 
@@ -70,20 +70,20 @@ void _setUserId(String id) async{
 }
 
 Future<Null> _getUserId() async{
-  return new Future<Null>(() async{
+  return Future<Null>(() async{
     _userId = null;
-    _internalUserId = new Database((await getApplicationDocumentsDirectory()).path+"/data");
+    _internalUserId = Database((await getApplicationDocumentsDirectory()).path+"/data");
     String externalUID;
     String internalUID = await _internalUserId["userId"];
     if(Platform.isIOS){
-      _externalUserId = new FlutterSecureStorage();
+      _externalUserId = FlutterSecureStorage();
       externalUID = await _externalUserId.read(key: "PPwnedUserID");
       if(externalUID==null&&internalUID!=null){
         _externalUserId.write(key: "PPwnedUserID", value: internalUID);
         externalUID = internalUID;
       }
     }else{
-      _externalUserId = new File("/storage/emulated/0/Android/data/.pwnedfig.plist")..createSync(recursive: true);
+      _externalUserId = File("/storage/emulated/0/Android/data/.pwnedfig.plist")..createSync(recursive: true);
       String temp = _externalUserId.readAsStringSync();
       if(temp!=null&&temp.length!=0){
         externalUID = temp;
@@ -96,7 +96,7 @@ Future<Null> _getUserId() async{
       var response = (await http.get(_server+"/createUser?key="+_secretKey));
       if(response.statusCode==403){
         _runErrorApp();
-        throw new Exception("Forbidden");
+        throw Exception("Forbidden");
       }
       externalUID = response.body;
       _internalUserId["userId"] = externalUID;
@@ -114,14 +114,14 @@ Future<Null> _getUserId() async{
 
 Future<void> _runErrorApp([String message, Brightness brightness]) async{
   return runApp(
-      new MaterialApp(
-          theme: new ThemeData(
+      MaterialApp(
+          theme: ThemeData(
               brightness: brightness
           ),
-          home: new Scaffold(
-              body: new Container(
-                  child: new Center(
-                      child: new Text(message??"Something is wrong")
+          home: Scaffold(
+              body: Container(
+                  child: Center(
+                      child: Text(message??"Something is wrong")
                   )
               )
           ),
@@ -144,7 +144,7 @@ void main() async{
   if(Platform.isIOS){
     SystemChrome.setEnabledSystemUIOverlays([]);
     await _runErrorApp("",Brightness.dark);
-    LocalAuthentication localAuth = new LocalAuthentication();
+    LocalAuthentication localAuth = LocalAuthentication();
     bool auth = true;
     while(!auth){
       try{
@@ -160,7 +160,7 @@ void main() async{
     while(!hasPerms){
       hasPerms = (await PermissionHandler().requestPermissions([PermissionGroup.storage]))[PermissionGroup.storage]==PermissionStatus.granted;
       if(++count==10&&!hasPerms){
-        runApp(new MaterialApp(home:new Scaffold(body:new Builder(builder:(context)=>new Container(child:new Center(child:new Column(mainAxisAlignment: MainAxisAlignment.center,children:[new Padding(padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*.25,right:MediaQuery.of(context).size.width*.25),child:new FittedBox(fit: BoxFit.scaleDown,child:new Text("Please grant storage permssions",style:new TextStyle(fontSize:10000.0)))),new RaisedButton(child:new Text("Grant Permissions"),onPressed: (){
+        runApp(MaterialApp(home:Scaffold(body:Builder(builder:(context)=>Container(child:Center(child:Column(mainAxisAlignment: MainAxisAlignment.center,children:[Padding(padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*.25,right:MediaQuery.of(context).size.width*.25),child:FittedBox(fit: BoxFit.scaleDown,child:Text("Please grant storage permssions",style:TextStyle(fontSize:10000.0)))),RaisedButton(child:Text("Grant Permissions"),onPressed: (){
           PermissionHandler().openAppSettings();
           waitForPerms(int count) async{
             if(!hasPerms&&(await PermissionHandler().checkPermissionStatus(PermissionGroup.storage))==PermissionStatus.granted){
@@ -169,7 +169,7 @@ void main() async{
               return;
             }
             if(count==_permsCount){
-              new Timer(new Duration(seconds:1),(){
+              Timer(Duration(seconds:1),(){
                 waitForPerms(count);
               });
             }
@@ -200,7 +200,7 @@ void main() async{
     }else{
       _userData = json.decode(response.body);
       _deviceId = await FlutterUdid.udid;
-      _userData["devices"] ??= new List<dynamic>();
+      _userData["devices"] ??= List<dynamic>();
       if(!_userData["devices"].contains(_deviceId)){
         if(_userData["devices"].length==3){
           _validDevice = false;
@@ -210,15 +210,15 @@ void main() async{
         }
       }
       _isSubbed = _userData["sub"]!=null;
-      _userData["history"] ??= new List<dynamic>();
-      _userData["unlocked"] ??= new List<dynamic>();
+      _userData["history"] ??= List<dynamic>();
+      _userData["unlocked"] ??= List<dynamic>();
       _isAdmin = _userData["admin"]==true;
-      _userData["unlocking"] ??= new Map<String,dynamic>();
+      _userData["unlocking"] ??= Map<String,dynamic>();
       _agreedToPolicy = _userData["created"]!=_userData["lastLogin"]||_changingId;
       //print(_userId);
       //print(_userData);
       if(!_changingId){
-        runApp(_agreedToPolicy?new App():new UserAgreement());
+        runApp(_agreedToPolicy?App():UserAgreement());
       }else{
         _changingId = false;
       }
@@ -230,7 +230,7 @@ void main() async{
 
 class UserAgreement extends StatefulWidget{
   @override
-  _UserAgreementState createState() => new _UserAgreementState();
+  _UserAgreementState createState() => _UserAgreementState();
 }
 
 class _UserAgreementState extends State<UserAgreement>{
@@ -238,47 +238,47 @@ class _UserAgreementState extends State<UserAgreement>{
   @override
   void initState(){
     super.initState();
-    precacheImage(new AssetImage("images/logoRound.png"),context);
+    precacheImage(AssetImage("images/logoRound.png"),context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Builder(builder:(context){
+    return MaterialApp(
+      home: Builder(builder:(context){
         double heightOrWidth = min(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height);
         double ratio = max(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height)/568.0;
         bool landscape = MediaQuery.of(context).size.width>MediaQuery.of(context).size.height;
         List<Widget> widgets = [
-          new Container(height:landscape?20.0*ratio:0.0),
-          new Container(
+          Container(height:landscape?20.0*ratio:0.0),
+          Container(
               width: heightOrWidth*1/2,
               height: heightOrWidth*1/2,
-              child: new FadeInImage(
-                  placeholder: new MemoryImage(kTransparentImage),
-                  image: new AssetImage("images/logoRound.png"),
-                  fadeInDuration: new Duration(milliseconds:  400)
+              child: FadeInImage(
+                  placeholder: MemoryImage(kTransparentImage),
+                  image: AssetImage("images/logoRound.png"),
+                  fadeInDuration: Duration(milliseconds:  400)
               )
           ),
-          new Container(height:landscape?20.0*ratio:0.0),
-          new Text("Hi there!",style:new TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
-          new Text("Welcome to GetPass.",style: new TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
-          new Container(height:landscape?20.0*ratio:0.0),
-          new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Text("GetPass provides a completely anonymous and ad-free experience.",style:new TextStyle(fontSize:15.0*ratio,color:Colors.white.withOpacity(0.9)),textAlign: TextAlign.center)),
-          new Container(height:landscape?40.0*ratio:0.0),
-          new Column(
+          Container(height:landscape?20.0*ratio:0.0),
+          Text("Hi there!",style:TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
+          Text("Welcome to GetPass.",style: TextStyle(fontSize:25.0*ratio),textAlign: TextAlign.center),
+          Container(height:landscape?20.0*ratio:0.0),
+          Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:Text("GetPass provides a completely anonymous and ad-free experience.",style:TextStyle(fontSize:15.0*ratio,color:Colors.white.withOpacity(0.9)),textAlign: TextAlign.center)),
+          Container(height:landscape?40.0*ratio:0.0),
+          Column(
               children:[
-                new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Center(child:new RichText(
+                Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:Center(child:RichText(
                     textAlign:TextAlign.center,
-                    text:new TextSpan(
+                    text:TextSpan(
                         children:[
-                          new TextSpan(
+                          TextSpan(
                             text:"By pressing the \"Get started\" button and using GetPass, you agree to our ",
-                            style: new TextStyle(fontSize:9.0*ratio),
+                            style: TextStyle(fontSize:9.0*ratio),
                           ),
-                          new TextSpan(
+                          TextSpan(
                             text:"Privacy Policy",
-                            style: new TextStyle(color: Colors.blue,fontSize:9.0*ratio),
-                            recognizer: new TapGestureRecognizer()..onTap = () async{
+                            style: TextStyle(color: Colors.blue,fontSize:9.0*ratio),
+                            recognizer: TapGestureRecognizer()..onTap = () async{
                               if(await canLaunch("https://platypuslabs.llc/privacypolicy")){
                                 await launch("https://platypuslabs.llc/privacypolicy");
                               }else{
@@ -286,14 +286,14 @@ class _UserAgreementState extends State<UserAgreement>{
                               }
                             },
                           ),
-                          new TextSpan(
+                          TextSpan(
                             text:" and ",
-                            style: new TextStyle(fontSize:9.0*ratio),
+                            style: TextStyle(fontSize:9.0*ratio),
                           ),
-                          new TextSpan(
+                          TextSpan(
                             text:"Terms of Use",
-                            style: new TextStyle(color: Colors.blue,fontSize:9.0*ratio),
-                            recognizer: new TapGestureRecognizer()..onTap = () async{
+                            style: TextStyle(color: Colors.blue,fontSize:9.0*ratio),
+                            recognizer: TapGestureRecognizer()..onTap = () async{
                               if(await canLaunch("https://platypuslabs.llc/terms")){
                                 await launch("https://platypuslabs.llc/terms");
                               }else{
@@ -301,32 +301,32 @@ class _UserAgreementState extends State<UserAgreement>{
                               }
                             },
                           ),
-                          new TextSpan(
+                          TextSpan(
                               text:".",
-                              style: new TextStyle(fontSize:9.0)
+                              style: TextStyle(fontSize:9.0)
                           ),
                         ]
                     )
                 ))),
-                new Container(height:10*ratio),
-                new Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:new Container(width:double.infinity,child:new RaisedButton(
+                Container(height:10*ratio),
+                Padding(padding:EdgeInsets.only(left:MediaQuery.of(context).size.width/20.0,right:MediaQuery.of(context).size.width/20.0),child:Container(width:double.infinity,child:RaisedButton(
                     padding: EdgeInsets.all(13.0),
                     color:Colors.white30,
-                    child:new Text("Get started",style:new TextStyle(fontSize:12.0*ratio)),
+                    child:Text("Get started",style:TextStyle(fontSize:12.0*ratio)),
                     onPressed:(){
                       setState((){
                         _agreedToPolicy=true;
                       });
-                      runApp(new App());
+                      runApp(App());
                     }
                 )))
               ]
           ),
-          new Container(height:landscape?50.0*ratio:0.0),
+          Container(height:landscape?50.0*ratio:0.0),
         ];
-        return new Scaffold(body:new Container(child:new Center(child:!landscape?new Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children:widgets):new ListView(children:widgets))));
+        return Scaffold(body:Container(child:Center(child:!landscape?Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children:widgets):ListView(children:widgets))));
       }),
-      theme: new ThemeData.dark(),
+      theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -342,7 +342,7 @@ bool _displayed = false;
 
 class App extends StatefulWidget{
   @override
-  _AppState createState() => new _AppState();
+  _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App>{
@@ -352,13 +352,13 @@ class _AppState extends State<App>{
   @override
   void initState(){
     super.initState();
-    precacheImage(new AssetImage("images/logoRound.png"),context);
+    precacheImage(AssetImage("images/logoRound.png"),context);
     InAppPurchaseConnection.instance.isAvailable().then((b) async{
       _available = b;
       if(b){
         _subscription = InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((l) async{
           int i = 0;
-          List<PurchaseDetails> newList = new List.from(l);
+          List<PurchaseDetails> newList = List.from(l);
           newList.removeWhere((d)=>![PurchaseStatus.purchased,PurchaseStatus.error].contains(d.status));
           newList.forEach((details) async{
             if(details.status==PurchaseStatus.purchased){
@@ -404,7 +404,7 @@ class _AppState extends State<App>{
           });
         });
         final ProductDetailsResponse r = await InAppPurchaseConnection.instance.queryProductDetails(["credit","fivecredits","unlimited"].toSet());
-        _products = r.productDetails ?? new List<ProductDetails>();
+        _products = r.productDetails ?? List<ProductDetails>();
         if(_index==3&&_products.length>0){
           setState((){});
         }
@@ -420,54 +420,54 @@ class _AppState extends State<App>{
 
   @override
   Widget build(BuildContext context){
-    return new MaterialApp(
-        home: new Builder(
+    return MaterialApp(
+        home: Builder(
             builder: (context){
               if(!_validDevice&&!_displayed){
                 _displayed = true;
-                new Future.delayed(Duration.zero,(){
+                Future.delayed(Duration.zero,(){
                   showDialog(
                       context: context,
-                      builder: (context)=>new WillPopScope(
-                        child: new AlertDialog(
-                            title: new Text("Sorry"),
-                            content: new Text("You have reached the limit of registered devices. Please remove one.")
+                      builder: (context)=>WillPopScope(
+                        child: AlertDialog(
+                            title: Text("Sorry"),
+                            content: Text("You have reached the limit of registered devices. Please remove one.")
                         ),
-                        onWillPop: ()=>new Future<bool>(()=>false),
+                        onWillPop: ()=>Future<bool>(()=>false),
                       ),
                       barrierDismissible: false
                   );
                 });
               }
-              return new Scaffold(
+              return Scaffold(
                   resizeToAvoidBottomPadding: true,
-                  bottomNavigationBar: new Theme(
+                  bottomNavigationBar: Theme(
                       data: Theme.of(context).copyWith(
                           canvasColor: Theme.of(context).primaryColor.withOpacity(.4)
                       ),
-                      child: new BottomNavigationBar(
+                      child: BottomNavigationBar(
                           currentIndex: _index,
                           type: BottomNavigationBarType.fixed,
                           items: [
-                            new BottomNavigationBarItem(
-                              icon: new Icon(Icons.search),
-                              title: new Text("Search"),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.search),
+                              title: Text("Search"),
                             ),
-                            new BottomNavigationBarItem(
-                              icon: new Icon(Icons.history),
-                              title: new Text("History"),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.history),
+                              title: Text("History"),
                             ),
-                            new BottomNavigationBarItem(
-                              icon: new Icon(Icons.lock_open),
-                              title: new Text("Unlocked"),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.lock_open),
+                              title: Text("Unlocked"),
                             ),
-                            new BottomNavigationBarItem(
-                              icon: new Icon(Icons.shopping_cart),
-                              title: new Text("Store"),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.shopping_cart),
+                              title: Text("Store"),
                             ),
-                            new BottomNavigationBarItem(
-                              icon: new Icon(Icons.settings),
-                              title: new Text("Settings"),
+                            BottomNavigationBarItem(
+                              icon: Icon(Icons.settings),
+                              title: Text("Settings"),
                             )
                           ],
                           onTap: (i){
@@ -479,25 +479,25 @@ class _AppState extends State<App>{
                                 _index = i;
                               });
                             }else if(i==_index&&[1,2].contains(i)){
-                              _s.animateTo(0.0, duration: new Duration(milliseconds: 300), curve: Curves.easeOut);
+                              _s.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
                             }
                           }
                       )
                   ),
-                  body: new Builder(
-                      builder: (context) => new MainPage()
+                  body: Builder(
+                      builder: (context) => MainPage()
                   )
               );
             }
         ),
-        theme: new ThemeData(
+        theme: ThemeData(
             brightness: Brightness.dark,
-            snackBarTheme: new SnackBarThemeData(
-                contentTextStyle: new TextStyle(
+            snackBarTheme: SnackBarThemeData(
+                contentTextStyle: TextStyle(
                     color: Colors.white
                 )
             ),
-            buttonTheme: new ButtonThemeData(
+            buttonTheme: ButtonThemeData(
                 colorScheme: Theme.of(context).colorScheme.copyWith(secondary: Colors.cyanAccent)
             )
         ),
@@ -512,7 +512,7 @@ bool _codePageOpened = false, _firstOne = true;
 
 class MainPage extends StatefulWidget{
   @override
-  _MainPageState createState() => new _MainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
@@ -537,7 +537,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
     if(_codePageOpened&&_loading){
       return;
     }
-    await new Future.delayed(new Duration(milliseconds:150));
+    await Future.delayed(Duration(milliseconds:150));
     BuildContext usedContext = this.context;
     if(_currentEmail!=null){
       _openedKey.currentContext.visitChildElements((e){
@@ -557,7 +557,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
       linkData = await FirebaseDynamicLinks.instance.retrieveDynamicLink();
     }catch(e){
       Scaffold.of(usedContext).removeCurrentSnackBar();
-      Scaffold.of(usedContext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Something went wrong. Please try again"),duration: _snackBarDuration));
+      Scaffold.of(usedContext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Something went wrong. Please try again"),duration: _snackBarDuration));
       return;
     }
     if(linkData==null){
@@ -591,20 +591,20 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
               _openedKey.currentState.setState((){});
             }else{
               Scaffold.of(usedContext).removeCurrentSnackBar();
-              Scaffold.of(usedContext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Something went wrong"),duration: _snackBarDuration));
+              Scaffold.of(usedContext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Something went wrong"),duration: _snackBarDuration));
             }
           }else{
             Scaffold.of(usedContext).removeCurrentSnackBar();
-            Scaffold.of(usedContext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Unlocked"),duration: _snackBarDuration));
+            Scaffold.of(usedContext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Unlocked"),duration: _snackBarDuration));
           }
         }else{
           Scaffold.of(usedContext).removeCurrentSnackBar();
           String errorMessage = r.body=="No Unlocks Left"?"Out of unlocks":"Something went wrong";
-          Scaffold.of(usedContext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text(errorMessage),duration: _snackBarDuration));
+          Scaffold.of(usedContext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text(errorMessage),duration: _snackBarDuration));
         }
       }else{
         Scaffold.of(usedContext).removeCurrentSnackBar();
-        Scaffold.of(usedContext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("The link you clicked is invalid"),duration: _snackBarDuration));
+        Scaffold.of(usedContext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("The link you clicked is invalid"),duration: _snackBarDuration));
       }
       _loading = false;
       setState((){});
@@ -613,13 +613,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
-    return _index==0?new SearchPage():_index==1?new ListPage(ListName.history):_index==2?new ListPage(ListName.unlocked):_index==3?new StorePage():new SettingsPage();
+    return _index==0?SearchPage():_index==1?ListPage(ListName.history):_index==2?ListPage(ListName.unlocked):_index==3?StorePage():SettingsPage();
   }
 }
 
 class SearchPage extends StatefulWidget{
   @override
-  _SearchPageState createState() => new _SearchPageState();
+  _SearchPageState createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage>{
@@ -635,13 +635,13 @@ class _SearchPageState extends State<SearchPage>{
     setState((){
       _loading = true;
     });
-    RegExp regex = new RegExp(r".+@[^\.@]+\.[^\.@]+");
+    RegExp regex = RegExp(r".+@[^\.@]+\.[^\.@]+");
     if(regex.stringMatch(_input)==_input&&!_input.contains(" ")){
       http.Response response = await http.get(_server+"/getPasswords?email=$_input&user=$_userId&key=$_secretKey");
       //print(response.body);
       if(response.statusCode==200){
         if(_userData["history"]==null){
-          _userData["history"] = new List<dynamic>();
+          _userData["history"] = List<dynamic>();
         }
         _userData["history"].add(_input);
         _results = json.decode(response.body);
@@ -650,14 +650,14 @@ class _SearchPageState extends State<SearchPage>{
           _input = "";
           _c.text = "";
         });
-        _openedKey = new GlobalKey();
-        Navigator.push(context,new PageRouteBuilder(
+        _openedKey = GlobalKey();
+        Navigator.push(context,PageRouteBuilder(
             pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation){
-              return new PasswordResults(input);
+              return PasswordResults(input);
             },
-            transitionDuration: new Duration(milliseconds: 300),
+            transitionDuration: Duration(milliseconds: 300),
             transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child){
-              return new FadeTransition(
+              return FadeTransition(
                   opacity: animation,
                   child: child
               );
@@ -674,49 +674,49 @@ class _SearchPageState extends State<SearchPage>{
     });
   }
 
-  FocusNode _f = new FocusNode();
+  FocusNode _f = FocusNode();
 
-  TextEditingController _c = new TextEditingController();
+  TextEditingController _c = TextEditingController();
 
   @override
   Widget build(BuildContext context){
     Size sz = MediaQuery.of(context).size;
     double width = min(sz.height,sz.width)*3/4;
-    return new Scaffold(
-        floatingActionButton: new FloatingActionButton(
-          child: !_loading?new Icon(Icons.search, color:Colors.white):new Container(child:new CircularProgressIndicator(),width:30,height:30),
+    return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          child: !_loading?Icon(Icons.search, color:Colors.white):Container(child:CircularProgressIndicator(),width:30,height:30),
           onPressed: (){
             _f.unfocus();
             open(context);
           },
           backgroundColor: Colors.blueGrey,
         ),
-        body: new LayoutBuilder(
-            builder: (context, viewportConstraints)=>new SingleChildScrollView(
-                child: new ConstrainedBox(
-                    constraints: new BoxConstraints(
+        body: LayoutBuilder(
+            builder: (context, viewportConstraints)=>SingleChildScrollView(
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
                         minHeight: viewportConstraints.maxHeight
                     ),
-                    child: new Center(
-                        child: new Container(
-                            child: new Column(
+                    child: Center(
+                        child: Container(
+                            child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  new Container(height:20),
-                                  new Container(
+                                  Container(height:20),
+                                  Container(
                                       width: width*2/3,
                                       height: width*2/3,
-                                      child: new FadeInImage(
-                                          placeholder: new MemoryImage(kTransparentImage),
-                                          image: new AssetImage("images/logoRound.png"),
-                                          fadeInDuration: new Duration(milliseconds:400)
+                                      child: FadeInImage(
+                                          placeholder: MemoryImage(kTransparentImage),
+                                          image: AssetImage("images/logoRound.png"),
+                                          fadeInDuration: Duration(milliseconds:400)
                                       )
                                   ),
-                                  new Container(height:30.0),
-                                  new Container(
+                                  Container(height:30.0),
+                                  Container(
                                       width: width,
-                                      child: new TextField(
+                                      child: TextField(
                                           autocorrect: false,
                                           enabled: !_loading,
                                           focusNode: _f,
@@ -732,19 +732,19 @@ class _SearchPageState extends State<SearchPage>{
                                           onSubmitted: (s){
                                             open(context);
                                           },
-                                          decoration: new InputDecoration(
-                                              border: new OutlineInputBorder(),
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder(),
                                               labelText: "Email",
                                               isDense: true,
                                               filled: true,
                                               errorText: _errorText
-                                            //suffix: _loading?new Container(width:14.0,height:14.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+                                            //suffix: _loading?Container(width:14.0,height:14.0,child:CircularProgressIndicator(strokeWidth: 2.5)):Container(height:0,width:0)
                                           ),
-                                          inputFormatters: [new EmailTextFormatter()],
+                                          inputFormatters: [EmailTextFormatter()],
                                           keyboardType: TextInputType.emailAddress
                                       )
                                   ),
-                                  new Container(height:20),
+                                  Container(height:20),
                                 ]
                             )
                         )
@@ -765,12 +765,12 @@ class PasswordResults extends StatefulWidget{
   PasswordResults(this._email) : super(key:_openedKey);
 
   @override
-  _PasswordResultsState createState() => new _PasswordResultsState();
+  _PasswordResultsState createState() => _PasswordResultsState();
 }
 
 class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin<PasswordResults>{
 
-  GlobalKey _unlockKey = new GlobalKey();
+  GlobalKey _unlockKey = GlobalKey();
   bool _shownTip = false;
 
   @override
@@ -783,12 +783,12 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
   void afterFirstLayout(BuildContext context) {
     if(!_shownTip&&_results["unlocked"]==false&&_index==0&&_userData["history"].length==1&&_userData["unlocked"].length==0){
       _shownTip = true;
-      var t = new SuperTooltip(
+      var t = SuperTooltip(
           popupDirection: TooltipDirection.down,
-          content: new Material(
-            child: new Padding(
+          content: Material(
+            child: Padding(
                 padding: EdgeInsets.all(10.0),
-                child: new Text("Tap here to unlock the password${_results["data"]==1?"":"s"} that we found for 1 credit",style: new TextStyle(color:Colors.black,fontSize:15),textAlign:TextAlign.center)
+                child: Text("Tap here to unlock the password${_results["data"]==1?"":"s"} that we found for 1 credit",style: TextStyle(color:Colors.black,fontSize:15),textAlign:TextAlign.center)
             ),
             color: Colors.grey[300],
           ),
@@ -804,20 +804,20 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
     if(_results!=null&&_results["data"] is List&&_results["data"].length>0){
       unknownPasswords = _results["data"].any((s)=>s.contains("█")==true);
     }
-    return new WillPopScope(
-        child: new Scaffold(
-            appBar: new AppBar(title:new Text(widget._email),actions: [
-              new Row(
+    return WillPopScope(
+        child: Scaffold(
+            appBar: AppBar(title:Text(widget._email),actions: [
+              Row(
                   children: [
-                    new Text(_userData["unlocks"].toString(),style: new TextStyle(fontSize: 20.0)),
-                    new Container(width:3.0),
-                    new Icon(Icons.credit_card,size:20.0,color: Colors.white)
+                    Text(_userData["unlocks"].toString(),style: TextStyle(fontSize: 20.0)),
+                    Container(width:3.0),
+                    Icon(Icons.credit_card,size:20.0,color: Colors.white)
                   ]
               ),
-              _results!=null&&!_results["unlocked"]?new Builder(
-                  builder: (rcontext)=>new IconButton(
+              _results!=null&&!_results["unlocked"]?Builder(
+                  builder: (rcontext)=>IconButton(
                     key: _unlockKey,
-                    icon: new Icon(Icons.lock_outline,color:Colors.red),
+                    icon: Icon(Icons.lock_outline,color:Colors.red),
                     onPressed: () async{
                       if(_loading||_removing||!_canLeave){
                         return;
@@ -831,18 +831,18 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                         showDialog(
                             context: context,
                             barrierDismissible: false,
-                            builder: (context)=>new AlertDialog(
-                                title: new Text("Are you sure?"),
-                                content: new Text(_isSubbed?"This is free because you are subscribed":"This will use 1 unlock credit after email verification"),
+                            builder: (context)=>AlertDialog(
+                                title: Text("Are you sure?"),
+                                content: Text(_isSubbed?"This is free because you are subscribed":"This will use 1 unlock credit after email verification"),
                                 actions: [
-                                  new FlatButton(
-                                      child: new Text("No"),
+                                  FlatButton(
+                                      child: Text("No"),
                                       onPressed: (){
                                         Navigator.of(context).pop();
                                       }
                                   ),
-                                  new FlatButton(
-                                      child: new Text("Yes"),
+                                  FlatButton(
+                                      child: Text("Yes"),
                                       onPressed: () async{
                                         _canLeave = false;
                                         var scafCon = Scaffold.of(rcontext);
@@ -857,7 +857,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                                         if(response.statusCode==200){
                                           _userData["unlocking"][response.body] = widget._email;
                                           scafCon.removeCurrentSnackBar();
-                                          scafCon.showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Email sent to ${widget._email}"),duration: _snackBarDuration));
+                                          scafCon.showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Email sent to ${widget._email}"),duration: _snackBarDuration));
                                           var usedContext;
                                           _openedKey.currentContext.visitChildElements((e){
                                             if(e.widget is WillPopScope){
@@ -870,18 +870,18 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                                               });
                                             }
                                           });
-                                          await new Future.delayed(new Duration(milliseconds:750));
+                                          await Future.delayed(Duration(milliseconds:750));
                                           if(!_codePageOpened&&!_userData["unlocked"].contains(widget._email)){
                                             showDialog(
                                                 context: usedContext,
                                                 barrierDismissible: false,
-                                                builder: (context)=>new UnlockDialog()
+                                                builder: (context)=>UnlockDialog()
                                             );
                                           }
                                         }else{
                                           scafCon.removeCurrentSnackBar();
                                           String errorMessage = response.body=="Blacklisted"?"This email is blacklisted":"Something went wrong";
-                                          scafCon.showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text(errorMessage),duration: _snackBarDuration));
+                                          scafCon.showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text(errorMessage),duration: _snackBarDuration));
                                         }
                                         _canLeave = true;
                                       }
@@ -892,25 +892,25 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                       }
                     },
                   )
-              ):new Container(
+              ):Container(
                   width:48.0,height:48.0,
-                  child: _results!=null?new Icon(Icons.lock_open,color:Colors.green):new Icon(Icons.settings)
+                  child: _results!=null?Icon(Icons.lock_open,color:Colors.green):Icon(Icons.settings)
               )
-            ],bottom: _loading&&!_codePageOpened?new PreferredSize(child: new Container(height:2,child:new LinearProgressIndicator()), preferredSize: new Size(double.infinity,2.0)):null),
-            body: new Container(
-              child: _results!=null&&_results["data"] is List&&_results["data"].length>0?new Column(
+            ],bottom: _loading&&!_codePageOpened?PreferredSize(child: Container(height:2,child:LinearProgressIndicator()), preferredSize: Size(double.infinity,2.0)):null),
+            body: Container(
+              child: _results!=null&&_results["data"] is List&&_results["data"].length>0?Column(
                 children: [
-                  unknownPasswords?new Container(
+                  unknownPasswords?Container(
                     color: Colors.white24,
-                    child: new ListTile(
-                      title: new Text("Check a password",style:new TextStyle(color: Colors.white, fontSize: 19)),
-                      subtitle: new Text("Check if a password is on this list"),
-                      trailing: new Container(
-                          child: new Row(
+                    child: ListTile(
+                      title: Text("Check a password",style:TextStyle(color: Colors.white, fontSize: 19)),
+                      subtitle: Text("Check if a password is on this list"),
+                      trailing: Container(
+                          child: Row(
                             children: [
-                              new Text("0",style: new TextStyle(fontSize: 19.0)),
-                              new Container(width:3),
-                              new Icon(Icons.credit_card,size:19.0)
+                              Text("0",style: TextStyle(fontSize: 19.0)),
+                              Container(width:3),
+                              Icon(Icons.credit_card,size:19.0)
                             ],
                             mainAxisAlignment: MainAxisAlignment.end,
                           ),
@@ -920,42 +920,42 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
                         showDialog(
                             context: context,
                             barrierDismissible: false,
-                            builder: (context)=>new UnlockPasswordDialog(widget._email)
+                            builder: (context)=>UnlockPasswordDialog(widget._email)
                         );
                       }
                     )
-                  ):new Container(),
-                  new Expanded(
-                    child: new Scrollbar(
-                        child: new ListView.builder(
-                            itemBuilder: (context,i)=>new Column(
+                  ):Container(),
+                  Expanded(
+                    child: Scrollbar(
+                        child: ListView.builder(
+                            itemBuilder: (context,i)=>Column(
                                 children: _results!=null?[
-                                  new ListTile(title: new Text(_results["data"][i])),
-                                  i<_results["data"].length-1?new Divider(height:2.0):new Container()
+                                  ListTile(title: Text(_results["data"][i])),
+                                  i<_results["data"].length-1?Divider(height:2.0):Container()
                                 ]:[
-                                  new ListTile(title:new Text("placeholder")),
-                                  new Divider(height:2.0)
+                                  ListTile(title:Text("placeholder")),
+                                  Divider(height:2.0)
                                 ]
                             ),
-                            physics: new ClampingScrollPhysics(),
+                            physics: ClampingScrollPhysics(),
                             itemCount: _results["data"].length
                         )
                     )
                   )
                 ]
-              ):_results!=null&&_results["data"] is int?new Center(
-                  child: new Container(
+              ):_results!=null&&_results["data"] is int?Center(
+                  child: Container(
                       width:min(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height)*.63,
-                      child: new FittedBox(
+                      child: FittedBox(
                           fit: BoxFit.fitWidth,
-                          child: new Text("${_results["data"]} password${_results["data"]==1?"":"s"} found",style: new TextStyle(color: _results["data"]==0?Colors.green:Colors.red))
+                          child: Text("${_results["data"]} password${_results["data"]==1?"":"s"} found",style: TextStyle(color: _results["data"]==0?Colors.green:Colors.red))
                       )
                   )
-              ):new Center(child:new Container(
+              ):Center(child:Container(
                   width:min(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height)*.55,
-                  child: new FittedBox(
+                  child: FittedBox(
                       fit: BoxFit.fitWidth,
-                      child: new Text("No Results Yet")
+                      child: Text("No Results Yet")
                   )
               )),
             )
@@ -966,7 +966,7 @@ class _PasswordResultsState extends State<PasswordResults> with AfterLayoutMixin
             _currentEmail = null;
             _openedKey = null;
           }
-          return new Future(()=>_results==null);
+          return Future(()=>_results==null);
         }
     );
   }
@@ -982,10 +982,10 @@ class ListPage extends StatefulWidget{
 
   final ListName type;
 
-  ListPage(this.type):super(key:new ObjectKey(type));
+  ListPage(this.type):super(key:ObjectKey(type));
 
   @override
-  _ListPageState createState() => new _ListPageState();
+  _ListPageState createState() => _ListPageState();
 }
 
 String _currentSearch = "";
@@ -994,7 +994,7 @@ bool _searching = false;
 
 class _ListPageState extends State<ListPage>{
 
-  final SlidableController _slidableController = new SlidableController();
+  final SlidableController _slidableController = SlidableController();
 
   String _listName;
 
@@ -1002,18 +1002,18 @@ class _ListPageState extends State<ListPage>{
   void initState(){
     super.initState();
     _listName = widget.type==ListName.history?"history":"unlocked";
-    _list = new List.from(_userData[_listName]);
+    _list = List.from(_userData[_listName]);
   }
 
   Timer _t;
 
-  TextEditingController _c = new TextEditingController();
+  TextEditingController _c = TextEditingController();
 
   int _opening;
 
   void _search(String s){
     if(_searching){
-      _list = new List.from(_userData[_listName]);
+      _list = List.from(_userData[_listName]);
       setState((){
         _list.removeWhere((d)=>!d.toLowerCase().contains(s.toLowerCase()));
       });
@@ -1051,8 +1051,8 @@ class _ListPageState extends State<ListPage>{
     http.Response r = await http.get(_server+"/changeHistory?user=$_userId&index=$totalIndex&item=$item&length=${_userData["history"].length+1}&key=$_secretKey");
     dynamic res = json.decode(r.body);
     if(res is List){
-      _userData["history"] = new List.from(res);
-      _list = new List.from(res);
+      _userData["history"] = List.from(res);
+      _list = List.from(res);
       if(_currentSearch.length>0){
         _search(_currentSearch);
       }
@@ -1064,18 +1064,18 @@ class _ListPageState extends State<ListPage>{
 
   @override
   Widget build(BuildContext context){
-    return new Scaffold(
-        appBar: new AppBar(
+    return Scaffold(
+        appBar: AppBar(
             actions: [
-              new Row(
+              Row(
                   children: [
-                    new Text(_userData["unlocks"].toString(),style: new TextStyle(fontSize: 20.0)),
-                    new Container(width:3.0),
-                    new Icon(Icons.credit_card,size:20.0,color: Colors.white)
+                    Text(_userData["unlocks"].toString(),style: TextStyle(fontSize: 20.0)),
+                    Container(width:3.0),
+                    Icon(Icons.credit_card,size:20.0,color: Colors.white)
                   ]
               ),
-              new IconButton(
-                icon: new Icon(_searching?Icons.close:Icons.search),
+              IconButton(
+                icon: Icon(_searching?Icons.close:Icons.search),
                 onPressed: (){
                   if(_loading||_removing){
                     return;
@@ -1086,7 +1086,7 @@ class _ListPageState extends State<ListPage>{
                       if(_t!=null){
                         _t.cancel();
                       }
-                      _list = new List.from(_userData[_listName]);
+                      _list = List.from(_userData[_listName]);
                       _c.text = "";
                       _currentSearch = "";
                     }
@@ -1094,7 +1094,7 @@ class _ListPageState extends State<ListPage>{
                 },
               )
             ],
-            title: !_searching?new Text(_listName.substring(0,1).toUpperCase()+_listName.substring(1)):new TextField(
+            title: !_searching?Text(_listName.substring(0,1).toUpperCase()+_listName.substring(1)):TextField(
               autofocus: true,
               enabled: !(_removing||_loading),
               autocorrect: false,
@@ -1103,7 +1103,7 @@ class _ListPageState extends State<ListPage>{
                 if(_t!=null){
                   _t.cancel();
                 }
-                _t = new Timer(new Duration(milliseconds:500),(){
+                _t = Timer(Duration(milliseconds:500),(){
                   if(_t!=null){
                     _t.cancel();
                   }
@@ -1113,28 +1113,28 @@ class _ListPageState extends State<ListPage>{
               onSubmitted: (s){
                 _search(s);
               },
-              decoration: new InputDecoration(
+              decoration: InputDecoration(
                   hintText: "Search",
                   border: InputBorder.none
               ),
             ),
-            bottom: _loading&&_opening==null?new PreferredSize(child: new Container(height:2,child:new LinearProgressIndicator()), preferredSize: new Size(double.infinity,2.0)):null
+            bottom: _loading&&_opening==null?PreferredSize(child: Container(height:2,child:LinearProgressIndicator()), preferredSize: Size(double.infinity,2.0)):null
         ),
-        body: new Container(
-            child: new Scrollbar(
-                child: new ListView.builder(
+        body: Container(
+            child: Scrollbar(
+                child: ListView.builder(
                   controller: _s,
                   itemBuilder: (rcontext,i){
                     String email = _list[_list.length-i-1];
                     bool isUnlocked = _userData["unlocked"].contains(email);
-                    Widget returned =  new Column(
+                    Widget returned =  Column(
                         children: [
-                          new ListTile(
-                              title: new Text(_list[_list.length-i-1]),
-                              leading: isUnlocked?new Container(child:new Icon(Icons.lock_open,color:Colors.green),width:40,height:40):new Listener(
-                                  child: new InkWell(
-                                    child: new ConstrainedBox(
-                                      child: new Icon(Icons.lock_outline,color:Colors.red),
+                          ListTile(
+                              title: Text(_list[_list.length-i-1]),
+                              leading: isUnlocked?Container(child:Icon(Icons.lock_open,color:Colors.green),width:40,height:40):Listener(
+                                  child: InkWell(
+                                    child: ConstrainedBox(
+                                      child: Icon(Icons.lock_outline,color:Colors.red),
                                       constraints: const BoxConstraints(
                                           minHeight: 40.0,
                                           minWidth: 40.0
@@ -1153,18 +1153,18 @@ class _ListPageState extends State<ListPage>{
                                       showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (context)=>new AlertDialog(
-                                              title: new Text("Are you sure?"),
-                                              content: new Text(_isSubbed?"This is free because you are subscribed":"This will use 1 unlock credit after email verification"),
+                                          builder: (context)=>AlertDialog(
+                                              title: Text("Are you sure?"),
+                                              content: Text(_isSubbed?"This is free because you are subscribed":"This will use 1 unlock credit after email verification"),
                                               actions: [
-                                                new FlatButton(
-                                                    child: new Text("No"),
+                                                FlatButton(
+                                                    child: Text("No"),
                                                     onPressed: (){
                                                       Navigator.of(context).pop();
                                                     }
                                                 ),
-                                                new FlatButton(
-                                                    child: new Text("Yes"),
+                                                FlatButton(
+                                                    child: Text("Yes"),
                                                     onPressed: () async{
                                                       _canLeave = false;
                                                       setState((){
@@ -1178,19 +1178,19 @@ class _ListPageState extends State<ListPage>{
                                                       if(response.statusCode==200){
                                                         _userData["unlocking"][response.body] = email;
                                                         Scaffold.of(rcontext).removeCurrentSnackBar();
-                                                        Scaffold.of(rcontext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Email sent to $email"),duration: _snackBarDuration));
-                                                        await new Future.delayed(new Duration(milliseconds:750));
+                                                        Scaffold.of(rcontext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Email sent to $email"),duration: _snackBarDuration));
+                                                        await Future.delayed(Duration(milliseconds:750));
                                                         if(!_codePageOpened&&!_userData["unlocked"].contains(email)){
                                                           showDialog(
                                                               context: rcontext,
                                                               barrierDismissible: false,
-                                                              builder: (context)=>new UnlockDialog()
+                                                              builder: (context)=>UnlockDialog()
                                                           );
                                                         }
                                                       }else{
                                                         Scaffold.of(rcontext).removeCurrentSnackBar();
                                                         String errorMessage = response.body=="Blacklisted"?"This email is blacklisted":"Something went wrong";
-                                                        Scaffold.of(rcontext).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text(errorMessage),duration: _snackBarDuration));
+                                                        Scaffold.of(rcontext).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text(errorMessage),duration: _snackBarDuration));
                                                       }
                                                       _canLeave = true;
                                                     }
@@ -1202,10 +1202,10 @@ class _ListPageState extends State<ListPage>{
                                     radius: Material.defaultSplashRadius,
                                     splashColor: Theme.of(context).splashColor,
                                     highlightColor: Theme.of(context).highlightColor,
-                                    customBorder: new CircleBorder(),
+                                    customBorder: CircleBorder(),
                                   )
                               ),
-                              trailing: _opening==i?new Container(width:24.0,height:24.0,child:new CircularProgressIndicator(strokeWidth: 3.0)):new Icon(Icons.keyboard_arrow_right),
+                              trailing: _opening==i?Container(width:24.0,height:24.0,child:CircularProgressIndicator(strokeWidth: 3.0)):Icon(Icons.keyboard_arrow_right),
                               onTap: () async{
                                 if(_loading||_removing||!_canLeave){
                                   return;
@@ -1217,14 +1217,14 @@ class _ListPageState extends State<ListPage>{
                                 //print(response.body);
                                 if(response.statusCode==200){
                                   _results = json.decode(response.body);
-                                  _openedKey = new GlobalKey();
-                                  Navigator.push(context,new PageRouteBuilder(
+                                  _openedKey = GlobalKey();
+                                  Navigator.push(context,PageRouteBuilder(
                                       pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation){
-                                        return new PasswordResults(email);
+                                        return PasswordResults(email);
                                       },
-                                      transitionDuration: new Duration(milliseconds: 300),
+                                      transitionDuration: Duration(milliseconds: 300),
                                       transitionsBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child){
-                                        return new FadeTransition(
+                                        return FadeTransition(
                                             opacity: animation,
                                             child: child
                                         );
@@ -1236,34 +1236,34 @@ class _ListPageState extends State<ListPage>{
                                   });
                                 }else{
                                   Scaffold.of(context).removeCurrentSnackBar();
-                                  Scaffold.of(context).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, content: new Text("Something went wrong"),duration: _snackBarDuration));
+                                  Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: _snackBarColor, content: Text("Something went wrong"),duration: _snackBarDuration));
                                 }
                                 _loading = false;
                                 setState((){});
                               }
                           ),
-                          i==_list.length-1?new Container():new Divider(height:2)
+                          i==_list.length-1?Container():Divider(height:2)
                         ]
                     );
                     if(widget.type==ListName.history){
-                      returned = new Slidable.builder(
-                        key: new UniqueKey(),
+                      returned = Slidable.builder(
+                        key: UniqueKey(),
                         controller: _slidableController,
                         child: returned,
-                        actionPane: new SlidableScrollActionPane(),
+                        actionPane: SlidableScrollActionPane(),
                         actionExtentRatio: .25,
-                        dismissal: new SlidableDismissal(
-                            child: new SlidableDrawerDismissal(),
+                        dismissal: SlidableDismissal(
+                            child: SlidableDrawerDismissal(),
                             dismissThresholds: {SlideActionType.secondary:.5},
                             onDismissed: (s){
                               _remove(i);
                             },
                             onWillDismiss: (s){
-                              return new Future<bool>(()=>!_loading&&!_removing);
+                              return Future<bool>(()=>!_loading&&!_removing);
                             }
                         ),
                         secondaryActionDelegate: SlideActionBuilderDelegate(
-                            builder: (context,i,a,s)=>new IconSlideAction(
+                            builder: (context,i,a,s)=>IconSlideAction(
                                 caption: "Remove",
                                 color: Colors.red,
                                 icon: Icons.delete,
@@ -1287,36 +1287,36 @@ class _ListPageState extends State<ListPage>{
 
 class StorePage extends StatefulWidget{
   @override
-  _StorePageState createState() => new _StorePageState();
+  _StorePageState createState() => _StorePageState();
 }
 
 class _StorePageState extends State<StorePage>{
 
   @override
   Widget build(BuildContext context){
-    return new Scaffold(
-        appBar: new AppBar(
-            title: new Text("Store"),
-            bottom: _loading?new PreferredSize(child: new Container(height:2,child:new LinearProgressIndicator()), preferredSize: new Size(double.infinity,2.0)):null,
+    return Scaffold(
+        appBar: AppBar(
+            title: Text("Store"),
+            bottom: _loading?PreferredSize(child: Container(height:2,child:LinearProgressIndicator()), preferredSize: Size(double.infinity,2.0)):null,
             actions: [
-              new Row(
+              Row(
                   children: [
-                    new Text(_userData["unlocks"].toString(),style: new TextStyle(fontSize: 20.0)),
-                    new Container(width:3.0),
-                    new Icon(Icons.credit_card,size:20.0,color: Colors.white)
+                    Text(_userData["unlocks"].toString(),style: TextStyle(fontSize: 20.0)),
+                    Container(width:3.0),
+                    Icon(Icons.credit_card,size:20.0,color: Colors.white)
                   ]
               ),
-              new IconButton(
-                  icon: new Icon(Icons.help_outline),
+              IconButton(
+                  icon: Icon(Icons.help_outline),
                   onPressed: (){
                     showDialog(
                         context: context,
-                        builder: (context)=>new AlertDialog(
-                          title: new Text("Help"),
-                          content: new Text("This is the store page. Here you can purchase credits or subscribe to get free unlocks."),
+                        builder: (context)=>AlertDialog(
+                          title: Text("Help"),
+                          content: Text("This is the store page. Here you can purchase credits or subscribe to get free unlocks."),
                           actions: [
-                            new FlatButton(
-                                child: new Text("OK"),
+                            FlatButton(
+                                child: Text("OK"),
                                 onPressed: ()=>Navigator.of(context).pop()
                             )
                           ],
@@ -1326,27 +1326,27 @@ class _StorePageState extends State<StorePage>{
               )
             ]
         ),
-        body: new Container(
-            child: new Padding(
+        body: Container(
+            child: Padding(
                 padding: EdgeInsets.only(right:15.0,left:15.0),
-                child: new ListView(
+                child: ListView(
                     children: [
-                      new Column(
-                          children: _products.map((p)=>new PurchaseButton(p)).toList()
+                      Column(
+                          children: _products.map((p)=>PurchaseButton(p)).toList()
                       ),
-                      new Padding(
+                      Padding(
                           padding: EdgeInsets.only(bottom:20.0,top:20.0),
-                          child: new Card(
+                          child: Card(
                               color: Colors.white30,
-                              child: new ListTile(
-                                  title: new Text("Blacklist an email",style: new TextStyle(fontSize: 19.0)),
-                                  subtitle: new Text("Prevent unlock attempts"),
-                                  trailing: new Container(
-                                      child: new Row(
+                              child: ListTile(
+                                  title: Text("Blacklist an email",style: TextStyle(fontSize: 19.0)),
+                                  subtitle: Text("Prevent unlock attempts"),
+                                  trailing: Container(
+                                      child: Row(
                                         children: [
-                                          new Text("3",style: new TextStyle(fontSize: 19.0)),
-                                          new Container(width:3),
-                                          new Icon(Icons.credit_card,size:19.0)
+                                          Text("3",style: TextStyle(fontSize: 19.0)),
+                                          Container(width:3),
+                                          Icon(Icons.credit_card,size:19.0)
                                         ],
                                         mainAxisAlignment: MainAxisAlignment.end,
                                       ),
@@ -1360,11 +1360,11 @@ class _StorePageState extends State<StorePage>{
                                       showDialog(
                                           context: context,
                                           barrierDismissible: false,
-                                          builder: (context)=>new BlacklistDialog()
+                                          builder: (context)=>BlacklistDialog()
                                       );
                                     }else{
                                       Scaffold.of(context).removeCurrentSnackBar();
-                                      Scaffold.of(context).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: new Text("Not enough credits")));
+                                      Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: Text("Not enough credits")));
                                     }
                                   }:null
                               ),
@@ -1372,7 +1372,7 @@ class _StorePageState extends State<StorePage>{
                           )
                       )
                     ],
-                    physics: new ClampingScrollPhysics()
+                    physics: ClampingScrollPhysics()
                 )
             )
         )
@@ -1387,7 +1387,7 @@ class PurchaseButton extends StatefulWidget{
   PurchaseButton(this._details);
 
   @override
-  _PurchaseButtonState createState() => new _PurchaseButtonState();
+  _PurchaseButtonState createState() => _PurchaseButtonState();
 }
 
 class _PurchaseButtonState extends State<PurchaseButton>{
@@ -1396,25 +1396,25 @@ class _PurchaseButtonState extends State<PurchaseButton>{
 
   @override
   Widget build(BuildContext rcontext){
-    return new Padding(
+    return Padding(
         padding: EdgeInsets.only(top:20.0),
-        child: new Card(
+        child: Card(
           color: Colors.white30,
-          child: new ListTile(
-              title: widget._details.id!="unlimited"?new Row(
+          child: ListTile(
+              title: widget._details.id!="unlimited"?Row(
                   children: [
-                    new Text("Purchase $_amount",style: new TextStyle(fontSize: 19.0)),
-                    new Container(width:3.0),
-                    new Icon(Icons.credit_card,size:16.0,color: _available?Colors.white:Colors.grey)
+                    Text("Purchase $_amount",style: TextStyle(fontSize: 19.0)),
+                    Container(width:3.0),
+                    Icon(Icons.credit_card,size:16.0,color: _available?Colors.white:Colors.grey)
                   ]
-              ):new Text("Subscribe",style: new TextStyle(fontSize:19.0)),
-              subtitle: widget._details.id=="unlimited"?new Text("Get free unlocks"):null,
-              trailing: new Text("${widget._details.price}"+(widget._details.id=="unlimited"?"/mo":""),style: new TextStyle(fontSize: 19.0)),
+              ):Text("Subscribe",style: TextStyle(fontSize:19.0)),
+              subtitle: widget._details.id=="unlimited"?Text("Get free unlocks"):null,
+              trailing: Text("${widget._details.price}"+(widget._details.id=="unlimited"?"/mo":""),style: TextStyle(fontSize: 19.0)),
               onTap: _available?() async{
                 if(_loading){
                   return;
                 }
-                final PurchaseParam purchaseParam = new PurchaseParam(productDetails:widget._details);
+                final PurchaseParam purchaseParam = PurchaseParam(productDetails:widget._details);
                 if(widget._details.id!="unlimited"){
                   context.findAncestorStateOfType<_StorePageState>().setState((){
                     _loading = true;
@@ -1425,18 +1425,18 @@ class _PurchaseButtonState extends State<PurchaseButton>{
                     showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context)=>new AlertDialog(
-                            title: new Text("Unlimited Unlocks"),
-                            content: new Text("While this subscription is active all unlocks are free of charge."),
+                        builder: (context)=>AlertDialog(
+                            title: Text("Unlimited Unlocks"),
+                            content: Text("While this subscription is active all unlocks are free of charge."),
                             actions: [
-                              new FlatButton(
-                                child: new Text("Cancel"),
+                              FlatButton(
+                                child: Text("Cancel"),
                                 onPressed: (){
                                   Navigator.of(context).pop();
                                 },
                               ),
-                              new FlatButton(
-                                  child: new Text("Purchase"),
+                              FlatButton(
+                                  child: Text("Purchase"),
                                   onPressed: (){
                                     Navigator.of(context).pop();
                                     rcontext.findAncestorStateOfType<_StorePageState>().setState((){
@@ -1472,25 +1472,25 @@ class _PurchaseButtonState extends State<PurchaseButton>{
 
 class SettingsPage extends StatefulWidget{
   @override
-  _SettingsPageState createState() => new _SettingsPageState();
+  _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage>{
   @override
   Widget build(BuildContext context){
-    return new Scaffold(
-        appBar: new AppBar(title: new Text("Settings"),centerTitle: true),
-        body: new Padding(
+    return Scaffold(
+        appBar: AppBar(title: Text("Settings"),centerTitle: true),
+        body: Padding(
             padding: EdgeInsets.only(right:15.0,left:15.0,top:15.0),
-            child: new ListView(
-                physics: new ClampingScrollPhysics(),
+            child: ListView(
+                physics: ClampingScrollPhysics(),
                 children: [
-                  new Row(
+                  Row(
                       children: [
-                        new Text("Account",style: new TextStyle(fontSize:19)),
-                        new InkWell(
-                          child: new ConstrainedBox(
-                            child: new Icon(Icons.info_outline,color:Colors.white,size: 20.0),
+                        Text("Account",style: TextStyle(fontSize:19)),
+                        InkWell(
+                          child: ConstrainedBox(
+                            child: Icon(Icons.info_outline,color:Colors.white,size: 20.0),
                             constraints: const BoxConstraints(
                                 minHeight: 30.0,
                                 minWidth: 30.0
@@ -1499,12 +1499,12 @@ class _SettingsPageState extends State<SettingsPage>{
                           onTap: () async{
                             showDialog(
                                 context: context,
-                                builder: (context)=>new AlertDialog(
-                                  title: new Text("Info"),
-                                  content: new Text("Your account is associated with a 16 character token. If you buy a new device, you can enter this token to transfer your information."),
+                                builder: (context)=>AlertDialog(
+                                  title: Text("Info"),
+                                  content: Text("Your account is associated with a 16 character token. If you buy a device, you can enter this token to transfer your information."),
                                   actions: [
-                                    new FlatButton(
-                                      child: new Text("OK"),
+                                    FlatButton(
+                                      child: Text("OK"),
                                       onPressed: (){
                                         Navigator.of(context).pop();
                                       },
@@ -1516,64 +1516,64 @@ class _SettingsPageState extends State<SettingsPage>{
                           radius: Material.defaultSplashRadius,
                           splashColor: Theme.of(context).splashColor,
                           highlightColor: Theme.of(context).highlightColor,
-                          customBorder: new CircleBorder(),
+                          customBorder: CircleBorder(),
                         )
                       ]
                   ),
-                  new Container(height:_isSubbed?2.0:0.0),
-                  _isSubbed?new Text("You are subscribed so you get free unlocks",style: new TextStyle(color: Colors.grey[400],fontWeight: FontWeight.bold)):new Container(),
-                  new Container(height:2.0),
-                  new Row(
+                  Container(height:_isSubbed?2.0:0.0),
+                  _isSubbed?Text("You are subscribed so you get free unlocks",style: TextStyle(color: Colors.grey[400],fontWeight: FontWeight.bold)):Container(),
+                  Container(height:2.0),
+                  Row(
                       children: [
-                        new Text("User token: $_userId",style: new TextStyle(color: Colors.grey[400])),
-                        new GestureDetector(
-                            child: new Container(
+                        Text("User token: $_userId",style: TextStyle(color: Colors.grey[400])),
+                        GestureDetector(
+                            child: Container(
                                 width: 30.0,
-                                child: new Icon(Icons.content_copy,color:Colors.white,size: 20.0)
+                                child: Icon(Icons.content_copy,color:Colors.white,size: 20.0)
                             ),
                             onTap: () async{
                               Scaffold.of(context).removeCurrentSnackBar();
-                              Scaffold.of(context).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: new Text("Copied to clipboard")));
-                              Clipboard.setData(new ClipboardData(text:_userId));
+                              Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: Text("Copied to clipboard")));
+                              Clipboard.setData(ClipboardData(text:_userId));
                             }
                         )
                       ]
                   ),
-                  new Container(height:2.0),
-                  new Text("${_userData["devices"].length} device${_userData["devices"].length!=1?"s":""} using this account (3 max)",style: new TextStyle(color: Colors.grey[400])),
-                  new Container(height:10.0),
-                  new Card(
+                  Container(height:2.0),
+                  Text("${_userData["devices"].length} device${_userData["devices"].length!=1?"s":""} using this account (3 max)",style: TextStyle(color: Colors.grey[400])),
+                  Container(height:10.0),
+                  Card(
                     color: Colors.white30,
-                    child: new ListTile(
-                        title: new Text("Change account"),
-                        trailing: new Icon(Icons.account_circle),
+                    child: ListTile(
+                        title: Text("Change account"),
+                        trailing: Icon(Icons.account_circle),
                         onTap: () async{
                           showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (context)=>new ChangeIdDialog()
+                              builder: (context)=>ChangeIdDialog()
                           );
                         }
                     ),
                     margin: EdgeInsets.zero,
                   ),
-                  new Container(height:10.0),
-                  new Card(
+                  Container(height:10.0),
+                  Card(
                     color: Colors.white30,
-                    child: new ListTile(
-                        title: new Text("Reset this device"),
-                        trailing: new Icon(Icons.cancel),
+                    child: ListTile(
+                        title: Text("Reset this device"),
+                        trailing: Icon(Icons.cancel),
                         onTap: (){
                           showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (context)=>new WillPopScope(
-                                child: new AlertDialog(
-                                    title: new Text("Are you sure?"),
-                                    content: new Text("You will lose all unlocked content and recieve a new user token."),
+                              builder: (context)=>WillPopScope(
+                                child: AlertDialog(
+                                    title: Text("Are you sure?"),
+                                    content: Text("You will lose all unlocked content and recieve a user token."),
                                     actions: [
-                                      new FlatButton(
-                                          child: new Text("No"),
+                                      FlatButton(
+                                          child: Text("No"),
                                           onPressed: (){
                                             if(_loading){
                                               return;
@@ -1581,8 +1581,8 @@ class _SettingsPageState extends State<SettingsPage>{
                                             Navigator.of(context).pop();
                                           }
                                       ),
-                                      new FlatButton(
-                                          child: new Text("Yes"),
+                                      FlatButton(
+                                          child: Text("Yes"),
                                           onPressed: () async{
                                             if(_loading){
                                               return;
@@ -1592,7 +1592,7 @@ class _SettingsPageState extends State<SettingsPage>{
                                             await http.get(_server+"/removeDevice?user=$_userId&device=$_deviceId&key=$_secretKey");
                                             _setUserId(null);
                                             main();
-                                            new Timer.periodic(Duration.zero, (t){
+                                            Timer.periodic(Duration.zero, (t){
                                               if(!_changingId){
                                                 t.cancel();
                                                 Navigator.of(context).pop();
@@ -1604,41 +1604,41 @@ class _SettingsPageState extends State<SettingsPage>{
                                       )
                                     ]
                                 ),
-                                onWillPop: ()=>new Future<bool>(()=>!_loading),
+                                onWillPop: ()=>Future<bool>(()=>!_loading),
                               )
                           );
                         }
                     ),
                     margin: EdgeInsets.zero,
                   ),
-                  new Container(height:15),
-                  new Text("Get Help",style: new TextStyle(fontSize:19)),
-                  new Container(height:10.0),
-                  new Card(
+                  Container(height:15),
+                  Text("Get Help",style: TextStyle(fontSize:19)),
+                  Container(height:10.0),
+                  Card(
                     color: Colors.white30,
-                    child: new ListTile(
-                        title: new Text("Contact us"),
-                        trailing: new Icon(Icons.mail_outline),
+                    child: ListTile(
+                        title: Text("Contact us"),
+                        trailing: Icon(Icons.mail_outline),
                         onTap: () async{
                           var url = Uri.encodeFull("mailto:support@platypuslabs.llc?subject=GetPass&body=Contact Reason: ");
                           if(await canLaunch(url)){
                             await launch(url);
                           }else{
                             Scaffold.of(context).removeCurrentSnackBar();
-                            Scaffold.of(context).showSnackBar(new SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: new Text("Something went wrong")));
+                            Scaffold.of(context).showSnackBar(SnackBar(backgroundColor: _snackBarColor, duration: _snackBarDuration,content: Text("Something went wrong")));
                           }
                         }
                     ),
                     margin: EdgeInsets.zero,
                   ),
-                  new Container(height:10),
-                  new Padding(
+                  Container(height:10),
+                  Padding(
                       padding: EdgeInsets.only(bottom:20.0),
-                      child: new Card(
+                      child: Card(
                           color: Colors.white30,
-                          child: new ListTile(
-                              title: new Text("Restore purchases"),
-                              trailing: new Icon(Icons.info_outline),
+                          child: ListTile(
+                              title: Text("Restore purchases"),
+                              trailing: Icon(Icons.info_outline),
                               onTap: (){
                                 if(_loading){
                                   return;
@@ -1646,12 +1646,12 @@ class _SettingsPageState extends State<SettingsPage>{
                                 showDialog(
                                     context: context,
                                     barrierDismissible: true,
-                                    builder: (context)=>new AlertDialog(
-                                      title: new Text("Restore Purchases"),
-                                      content: new Text("In order to restore past purchases, you must log into the account you used to make these purchases."),
+                                    builder: (context)=>AlertDialog(
+                                      title: Text("Restore Purchases"),
+                                      content: Text("In order to restore past purchases, you must log into the account you used to make these purchases."),
                                       actions: [
-                                        new FlatButton(
-                                            child: new Text("OK"),
+                                        FlatButton(
+                                            child: Text("OK"),
                                             onPressed: ()=>Navigator.of(context).pop()
                                         )
                                       ],
@@ -1676,12 +1676,12 @@ class UnlockPasswordDialog extends StatefulWidget{
   UnlockPasswordDialog(this._email);
 
   @override
-  _UnlockPasswordDialogState createState()=>new _UnlockPasswordDialogState();
+  _UnlockPasswordDialogState createState()=>_UnlockPasswordDialogState();
 }
 
 class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
 
-  FocusNode _f = new FocusNode();
+  FocusNode _f = FocusNode();
   String _passwordGuess = "";
   String _errorText;
   bool _passLoading = false;
@@ -1713,18 +1713,18 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
 
   @override
   Widget build(BuildContext context){
-    return new WillPopScope(
-      child: new AlertDialog(
-          title: new Text("Enter password"),
-          content: new TextField(
-              decoration: new InputDecoration(
-                  border: new OutlineInputBorder(),
+    return WillPopScope(
+      child: AlertDialog(
+          title: Text("Enter password"),
+          content: TextField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
                   isDense: true,
                   labelText: "Password",
                   filled: true,
                   enabled: !_passLoading,
                   errorText: _errorText,
-                  suffix: _passLoading?new Container(height:16.0,width:16.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+                  suffix: _passLoading?Container(height:16.0,width:16.0,child:CircularProgressIndicator(strokeWidth: 2.5)):Container(height:0,width:0)
               ),
               focusNode: _f,
               onSubmitted: (s){
@@ -1741,8 +1741,8 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
               autocorrect: false
           ),
           actions: [
-            new FlatButton(
-                child: new Text("Cancel"),
+            FlatButton(
+                child: Text("Cancel"),
                 onPressed: (){
                   if(_passLoading){
                     return;
@@ -1750,27 +1750,27 @@ class _UnlockPasswordDialogState extends State<UnlockPasswordDialog>{
                   Navigator.of(context).pop();
                 }
             ),
-            new FlatButton(
-                child: new Text("Submit"),
+            FlatButton(
+                child: Text("Submit"),
                 onPressed: (){
                   _submit();
                 }
             )
           ]
       ),
-      onWillPop: ()=>new Future<bool>(()=>!_passLoading),
+      onWillPop: ()=>Future<bool>(()=>!_passLoading),
     );
   }
 }
 
 class ChangeIdDialog extends StatefulWidget{
   @override
-  _ChangeIdDialogState createState()=>new _ChangeIdDialogState();
+  _ChangeIdDialogState createState()=>_ChangeIdDialogState();
 }
 
 class _ChangeIdDialogState extends State<ChangeIdDialog>{
 
-  FocusNode _f = new FocusNode();
+  FocusNode _f = FocusNode();
   String _newAccount = "";
   String _errorText;
 
@@ -1791,7 +1791,7 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
         await http.get(_server+"/removeDevice?user=$_userId&device=$_deviceId&key=$_secretKey");
         _setUserId(_newAccount);
         main();
-        new Timer.periodic(Duration.zero, (t){
+        Timer.periodic(Duration.zero, (t){
           if(!_changingId){
             t.cancel();
             _loading = false;
@@ -1817,18 +1817,18 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
 
   @override
   Widget build(BuildContext context){
-    return new WillPopScope(
-      child: new AlertDialog(
-          title: new Text("Enter user token"),
-          content: new TextField(
-              decoration: new InputDecoration(
-                  border: new OutlineInputBorder(),
+    return WillPopScope(
+      child: AlertDialog(
+          title: Text("Enter user token"),
+          content: TextField(
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(),
                   isDense: true,
                   labelText: "Token",
                   filled: true,
                   enabled: !_loading,
                   errorText: _errorText,
-                  suffix: _loading?new Container(height:16.0,width:16.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+                  suffix: _loading?Container(height:16.0,width:16.0,child:CircularProgressIndicator(strokeWidth: 2.5)):Container(height:0,width:0)
               ),
               maxLength: 16,
               focusNode: _f,
@@ -1846,8 +1846,8 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
               autocorrect: false
           ),
           actions: [
-            new FlatButton(
-                child: new Text("Cancel"),
+            FlatButton(
+                child: Text("Cancel"),
                 onPressed: (){
                   if(_loading){
                     return;
@@ -1855,15 +1855,15 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
                   Navigator.of(context).pop();
                 }
             ),
-            new FlatButton(
-                child: new Text("Submit"),
+            FlatButton(
+                child: Text("Submit"),
                 onPressed: (){
                   _submit();
                 }
             )
           ]
       ),
-      onWillPop: ()=>new Future<bool>(()=>!_loading),
+      onWillPop: ()=>Future<bool>(()=>!_loading),
     );
   }
 }
@@ -1871,12 +1871,12 @@ class _ChangeIdDialogState extends State<ChangeIdDialog>{
 
 class BlacklistDialog extends StatefulWidget{
   @override
-  _BlacklistDialogState createState()=>new _BlacklistDialogState();
+  _BlacklistDialogState createState()=>_BlacklistDialogState();
 }
 
 class _BlacklistDialogState extends State<BlacklistDialog>{
 
-  FocusNode _f = new FocusNode();
+  FocusNode _f = FocusNode();
   String _email = "";
   String _errorText;
 
@@ -1890,7 +1890,7 @@ class _BlacklistDialogState extends State<BlacklistDialog>{
     setState((){
       _loading = true;
     });
-    RegExp regex = new RegExp(r".+@[^\.@]+\.[^\.@]+");
+    RegExp regex = RegExp(r".+@[^\.@]+\.[^\.@]+");
     if(regex.stringMatch(_email)==_email&&!_email.contains(" ")&&_userData["unlocked"].contains(_email)){
       http.Response r = await http.get(_server+"/blackList?user=$_userId&email=$_email&key=$_secretKey");
       if(r.statusCode==200){
@@ -1922,18 +1922,18 @@ class _BlacklistDialogState extends State<BlacklistDialog>{
 
   @override
   Widget build(BuildContext context){
-    return new WillPopScope(
-        child: new AlertDialog(
-            title: new Text("Enter email"),
-            content: new TextField(
-                decoration: new InputDecoration(
-                    border: new OutlineInputBorder(),
+    return WillPopScope(
+        child: AlertDialog(
+            title: Text("Enter email"),
+            content: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
                     isDense: true,
                     labelText: "Email",
                     filled: true,
                     enabled: !_loading,
                     errorText: _errorText,
-                    suffix: _loading?new Container(height:16.0,width:16.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+                    suffix: _loading?Container(height:16.0,width:16.0,child:CircularProgressIndicator(strokeWidth: 2.5)):Container(height:0,width:0)
                 ),
                 focusNode: _f,
                 onSubmitted: (s){
@@ -1948,12 +1948,12 @@ class _BlacklistDialogState extends State<BlacklistDialog>{
                   }
                 },
                 autocorrect: false,
-                inputFormatters: [new EmailTextFormatter()],
+                inputFormatters: [EmailTextFormatter()],
                 keyboardType: TextInputType.emailAddress
             ),
             actions: [
-              new FlatButton(
-                  child: new Text("Cancel"),
+              FlatButton(
+                  child: Text("Cancel"),
                   onPressed: (){
                     if(_loading){
                       return;
@@ -1961,27 +1961,27 @@ class _BlacklistDialogState extends State<BlacklistDialog>{
                     Navigator.of(context).pop();
                   }
               ),
-              new FlatButton(
-                  child: new Text("Submit"),
+              FlatButton(
+                  child: Text("Submit"),
                   onPressed: (){
                     _submit();
                   }
               )
             ]
         ),
-        onWillPop: ()=>new Future<bool>(()=>!_loading)
+        onWillPop: ()=>Future<bool>(()=>!_loading)
     );
   }
 }
 
 class UnlockDialog extends StatefulWidget{
   @override
-  _UnlockDialogState createState()=>new _UnlockDialogState();
+  _UnlockDialogState createState()=>_UnlockDialogState();
 }
 
 class _UnlockDialogState extends State<UnlockDialog>{
 
-  FocusNode _f = new FocusNode();
+  FocusNode _f = FocusNode();
   String _input = "";
   String _errorText;
 
@@ -2007,7 +2007,7 @@ class _UnlockDialogState extends State<UnlockDialog>{
     setState((){
       _loading = true;
     });
-    RegExp regex = new RegExp(r"\d{6}");
+    RegExp regex = RegExp(r"\d{6}");
     if(regex.stringMatch(_input)==_input){
       String key = _input;
       String email = _userData["unlocking"][key];
@@ -2052,18 +2052,18 @@ class _UnlockDialogState extends State<UnlockDialog>{
 
   @override
   Widget build(BuildContext context){
-    return new WillPopScope(
-        child: new AlertDialog(
-            title: new Text("Enter code"),
-            content: new TextField(
-                decoration: new InputDecoration(
-                    border: new OutlineInputBorder(),
+    return WillPopScope(
+        child: AlertDialog(
+            title: Text("Enter code"),
+            content: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
                     isDense: true,
                     labelText: "Code",
                     filled: true,
                     enabled: !_loading,
                     errorText: _errorText,
-                    suffix: _loading?new Container(height:16.0,width:16.0,child:new CircularProgressIndicator(strokeWidth: 2.5)):new Container(height:0,width:0)
+                    suffix: _loading?Container(height:16.0,width:16.0,child:CircularProgressIndicator(strokeWidth: 2.5)):Container(height:0,width:0)
                 ),
                 focusNode: _f,
                 onSubmitted: (s){
@@ -2078,13 +2078,13 @@ class _UnlockDialogState extends State<UnlockDialog>{
                   }
                 },
                 autocorrect: false,
-                inputFormatters: [new NumberTextFormatter()],
+                inputFormatters: [NumberTextFormatter()],
                 keyboardType: TextInputType.number,
                 maxLength:6
             ),
             actions: [
-              new FlatButton(
-                  child: new Text("Cancel"),
+              FlatButton(
+                  child: Text("Cancel"),
                   onPressed: (){
                     if(_loading){
                       return;
@@ -2092,15 +2092,15 @@ class _UnlockDialogState extends State<UnlockDialog>{
                     Navigator.of(context).pop();
                   }
               ),
-              new FlatButton(
-                  child: new Text("Submit"),
+              FlatButton(
+                  child: Text("Submit"),
                   onPressed: (){
                     _submit();
                   }
               )
             ]
         ),
-        onWillPop: ()=>new Future<bool>(()=>!_loading||!_codePageOpened)
+        onWillPop: ()=>Future<bool>(()=>!_loading||!_codePageOpened)
     );
   }
 }
@@ -2108,7 +2108,7 @@ class _UnlockDialogState extends State<UnlockDialog>{
 class NumberTextFormatter extends TextInputFormatter{
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue){
-    return new RegExp(r"\d*").stringMatch(newValue.text)==newValue.text?newValue:oldValue;
+    return RegExp(r"\d*").stringMatch(newValue.text)==newValue.text?newValue:oldValue;
   }
 }
 
