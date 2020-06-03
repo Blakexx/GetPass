@@ -10,6 +10,7 @@ import "dart:async";
 import "dart:math";
 import "package:flutter_slidable/flutter_slidable.dart";
 import "package:in_app_purchase/in_app_purchase.dart";
+import "package:in_app_purchase/store_kit_wrappers.dart";
 import "package:permission_handler/permission_handler.dart";
 import "package:flutter_udid/flutter_udid.dart";
 import 'package:url_launcher/url_launcher.dart';
@@ -135,6 +136,7 @@ int _permsCount = 0;
 bool _canLeave = true;
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   if([_server,_secretKey].contains(null)&&![server,secretKey].contains(null)){
     _server = server;
     _secretKey = secretKey;
@@ -145,7 +147,7 @@ void main() async{
     SystemChrome.setEnabledSystemUIOverlays([]);
     await _runErrorApp("",Brightness.dark);
     LocalAuthentication localAuth = LocalAuthentication();
-    bool auth = true;
+    bool auth = false;
     while(!auth){
       try{
         auth = await localAuth.authenticateWithBiometrics(localizedReason: "To ensure you are the owner of this phone");
@@ -355,6 +357,13 @@ class _AppState extends State<App>{
     precacheImage(AssetImage("images/logoRound.png"),context);
     InAppPurchaseConnection.instance.isAvailable().then((b) async{
       _available = b;
+      if(Platform.isIOS){
+        var paymentWrapper = SKPaymentQueueWrapper();
+        var transactions = await paymentWrapper.transactions();
+        transactions.forEach((transaction) async{
+          await paymentWrapper.finishTransaction(transaction);
+        });
+      }
       if(b){
         _subscription = InAppPurchaseConnection.instance.purchaseUpdatedStream.listen((l) async{
           int i = 0;
@@ -362,11 +371,6 @@ class _AppState extends State<App>{
           newList.removeWhere((d)=>![PurchaseStatus.purchased,PurchaseStatus.error].contains(d.status));
           newList.forEach((details) async{
             if(details.status==PurchaseStatus.purchased){
-              if(Platform.isIOS){
-                InAppPurchaseConnection.instance.completePurchase(details);
-              }else if(Platform.isAndroid){
-                InAppPurchaseConnection.instance.consumePurchase(details);
-              }
               PurchaseVerificationData data = details.verificationData;
               while(data==null){
                 InAppPurchaseConnection.instance.refreshPurchaseVerificationData();
@@ -395,6 +399,10 @@ class _AppState extends State<App>{
                   }
                 });
               }
+            }
+            InAppPurchaseConnection.instance.completePurchase(details);
+            if(Platform.isAndroid){
+              InAppPurchaseConnection.instance.consumePurchase(details);
             }
             if(_loading==true&&++i==l.length){
               setState((){
